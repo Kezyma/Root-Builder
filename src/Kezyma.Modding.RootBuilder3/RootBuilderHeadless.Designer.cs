@@ -29,6 +29,7 @@ namespace Kezyma.Modding.RootBuilder3
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(RootBuilderHeadless));
             this.lstLog = new System.Windows.Forms.ListBox();
             this.strStatus = new System.Windows.Forms.StatusStrip();
             this.prgBarStatus = new System.Windows.Forms.ToolStripProgressBar();
@@ -106,6 +107,7 @@ namespace Kezyma.Modding.RootBuilder3
             this.Controls.Add(this.strStatus);
             this.Controls.Add(this.lstLog);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "RootBuilderHeadless";
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.Text = "Kezyma\'s Root Builder for Mod Organizer 2";
