@@ -37,7 +37,7 @@
     <None Update="Plugin\__init__.py">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="readme.txt">
+    <None Update="readme.md">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="RootBuilder.ico">
@@ -49,7 +49,7 @@
     <Copy SourceFiles="Plugin\__init__.py" DestinationFolder="$(PublishDir)\RootBuilder" />
     <Copy SourceFiles="Plugin\rootbuilder.py" DestinationFolder="$(PublishDir)\RootBuilder" />
     <Copy SourceFiles="RootBuilder.ico" DestinationFolder="$(PublishDir)\RootBuilder" />
-    <Copy SourceFiles="readme.txt" DestinationFolder="$(PublishDir)\RootBuilder" />
+    <Copy SourceFiles="readme.md" DestinationFolder="$(PublishDir)\RootBuilder" />
     <Move SourceFiles="$(PublishDir)\RootBuilder3.exe" DestinationFolder="$(PublishDir)\RootBuilder" />
   </Target>
 </Project>
