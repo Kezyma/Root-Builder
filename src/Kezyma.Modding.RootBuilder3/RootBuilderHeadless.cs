@@ -18,6 +18,7 @@ namespace Kezyma.Modding.RootBuilder3
             _rootBuilder = rootBuilder;
             _debug = debug;
             _runType = runType;
+            LogWriter.ClearLog();
             InitializeComponent();
         }
 
@@ -30,6 +31,7 @@ namespace Kezyma.Modding.RootBuilder3
             lblBarStatus.Text = message;
             lstLog.Items.Add(message);
             lstLog.TopIndex = lstLog.Items.Count - 1;
+            LogWriter.Log(message);
         }
 
         private void Progress(int progress, string message)
@@ -39,7 +41,7 @@ namespace Kezyma.Modding.RootBuilder3
 
             prgBarStatus.Value = progress;
             prgBarStatus.ProgressBar.SetState(state);
-            Log(message);
+            Log($"{(progress > 0 ? $"{progress}% " : "")}{message}");
         }
 
         private void buildWorker_ProgressChanged(object sender, ProgressChangedEventArgs e) => Progress(e.ProgressPercentage, e.UserState.ToString());
@@ -59,9 +61,24 @@ namespace Kezyma.Modding.RootBuilder3
                 (message) => clearWorker.ReportProgress(0, message),
                 (progress, message) => clearWorker.ReportProgress(progress, message));
 
-        private void buildWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e) { Log("Build Complete"); if (!_debug) Close(); }
-        private void syncWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e) { Log("Sync Complete"); if (!_debug) Close(); }
-        private void clearWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e) { Log("Clear Complete"); if (!_debug) Close(); }
+        private void buildWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            if (e.Error != null) Log("Build failed. Check log file.");
+            else Log("Build complete.");
+            if (!_debug) Close();
+        }
+        private void syncWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            if (e.Error != null) Log("Sync failed. Check log file.");
+            else Log("Sync complete.");
+            if (!_debug) Close();
+        }
+        private void clearWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            if (e.Error != null) Log("Clear failed. Check log file.");
+            else Log("Clear complete.");
+            if (!_debug) Close();
+        }
 
         private void RootBuilderHeadless_Load(object sender, EventArgs e)
         {

@@ -53,8 +53,5 @@ namespace Kezyma.Modding.RootBuilder3
                 
             }
         }
-
-        private static void ConsoleLog(string message) => Console.WriteLine(message);
-        private static void ConsoleProgress(int progress, string message) => Console.WriteLine($"{progress}% {message}");
     }
 }

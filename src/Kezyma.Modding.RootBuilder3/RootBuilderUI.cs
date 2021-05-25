@@ -18,6 +18,7 @@ namespace Kezyma.Modding.RootBuilder3
         public RootBuilderUI(RootBuilder rootBuilder)
         {
             _rootBuilder = rootBuilder;
+            LogWriter.ClearLog();
             InitializeComponent();
             BindGamePicker();
             InitialiseUI();
@@ -32,6 +33,7 @@ namespace Kezyma.Modding.RootBuilder3
             lblBarStatus.Text = message;
             lstLog.Items.Add(message);
             lstLog.TopIndex = lstLog.Items.Count - 1;
+            LogWriter.Log(message);
         }
 
         private void Progress(int progress, string message)
@@ -41,7 +43,7 @@ namespace Kezyma.Modding.RootBuilder3
 
             prgBarStatus.Value = progress;
             prgBarStatus.ProgressBar.SetState(state);
-            Log(message);
+            Log($"{(progress > 0 ? $"{progress}% " : "")}{message}");
         }
         private void buildWorker_ProgressChanged(object sender, ProgressChangedEventArgs e) => Progress(e.ProgressPercentage, e.UserState.ToString());
         private void syncWorker_ProgressChanged(object sender, ProgressChangedEventArgs e) => Progress(e.ProgressPercentage, e.UserState.ToString());
@@ -123,9 +125,24 @@ namespace Kezyma.Modding.RootBuilder3
                 (message) => clearWorker.ReportProgress(0, message),
                 (progress, message) => clearWorker.ReportProgress(progress, message));
 
-        private void buildWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e) { EnableInputs(true); Log("Build Complete"); }
-        private void syncWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e) { EnableInputs(true); Log("Sync Complete"); }
-        private void clearWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e) { EnableInputs(true); Log("Clear Complete"); }
+        private void buildWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e) 
+        {
+            if (e.Error != null) Log("Build failed. Check log file.");
+            else Log("Build complete.");
+            EnableInputs(true); 
+        }
+        private void syncWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            if (e.Error != null) Log("Sync failed. Check log file.");
+            else Log("Sync complete.");
+            EnableInputs(true);
+        }
+        private void clearWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            if (e.Error != null) Log("Clear failed. Check log file.");
+            else Log("Clear complete.");
+            EnableInputs(true);
+        }
 
         private void chkCache_CheckedChanged(object sender, EventArgs e)
         {

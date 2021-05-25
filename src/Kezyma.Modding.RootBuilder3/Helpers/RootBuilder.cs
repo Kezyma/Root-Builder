@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -49,65 +50,130 @@ namespace Kezyma.Modding.RootBuilder3.Helpers
             return icon;
         }
 
-        public Image GetDefaultIcon() => new IconLoader(new string[] {}).GetIconForPath("", Process.GetCurrentProcess().MainModule.FileName).ToBitmap();
+        public Image GetDefaultIcon() => new IconLoader(new string[] { }).GetIconForPath("", Process.GetCurrentProcess().MainModule.FileName).ToBitmap();
         #endregion
 
         #region Build
         public void Build(Action<string> log = null, Action<int, string> progress = null)
         {
+            log("Starting build.");
             ScanGameFiles(log, progress);
             ScanModFiles(log, progress);
             BackupGameFiles(log, progress);
             DeployModFiles(log, progress);
-            
-            CurrentGameData.Built = true;
-            SaveRootBuilderData();
+
+            try
+            {
+                log("Saving RootBuilder data.");
+                CurrentGameData.Built = true;
+                SaveRootBuilderData();
+                log("Saved RootBuilder data.");
+            }
+            catch (Exception e)
+            {
+                log($"Could not save RootBuilder data. Message: {e.Message}");
+                throw e;
+            }
+
+            log("Build completed.");
         }
         private void ScanGameFiles(Action<string> log = null, Action<int, string> progress = null)
         {
+
             if (!CurrentGameData.GameFiles.Any())
             {
+                log("Scanning game files.");
                 if (CurrentGameData.Cache && CacheExists(CurrentGameData.Id))
                 {
-                    log("Loading game file cache.");
-                    CurrentGameData.GameFiles = GetCacheFiles(CurrentGameData.Id);
-                    log("Game file cache loaded.");
+                    try
+                    {
+                        log("Game cache exists. Loading from cache.");
+                        CurrentGameData.GameFiles = GetCacheFiles(CurrentGameData.Id);
+                        log("Successfully loaded from game cache.");
+                    }
+                    catch (Exception e)
+                    {
+                        log($"Failed to load game cache. Message: {e.Message}");
+                        throw e;
+                    }
                 }
                 else
                 {
-                    log("Scanning game files.");
-                    var gameFiles = GetCurrentGameFolderFiles();
+                    log("Finding current game files.");
+                    List<string> gameFiles;
+                    try
+                    {
+                        gameFiles = GetCurrentGameFolderFiles();
+                        log($"Found {gameFiles.Count} game files.");
+                    }
+                    catch (Exception e)
+                    {
+                        log($"Could not find game files. Message: {e.Message}");
+                        throw e;
+                    }
 
+                    log("Hashing game files.");
                     double i = 0, t = gameFiles.Count;
                     foreach (var file in gameFiles)
                     {
-                        CurrentGameData.GameFiles.Add(new RootBuilderFileData
+                        var relativePath = RelativePath(file, CurrentGameData.GamePath);
+                        var newFile = new RootBuilderFileData
                         {
                             Path = file,
-                            RelativePath = RelativePath(file, CurrentGameData.GamePath),
-                            Hash = ComputeHash(file)
-                        });
+                            RelativePath = relativePath
+                        };
                         i++;
-                        progress((int)(i / t * 100), $"Scanned {file}");
+                        try
+                        {
+                            newFile.Hash = ComputeHash(file);
+                            CurrentGameData.GameFiles.Add(newFile);
+                            progress((int)(i / t * 100), $"Hashed {newFile.RelativePath}");
+                        }
+                        catch (Exception e)
+                        {
+                            progress((int)(i / t * 100), $"Failed to hash {newFile.RelativePath} Message: {e.Message}");
+                            throw e;
+                        }
                     }
-                    progress(0, $"Scanned {gameFiles.Count} game files.");
+                    progress(0, $"Hashed {gameFiles.Count} game files.");
 
                     if (CurrentGameData.Cache)
                     {
-                        log("Saving game data cache.");
-                        SetCacheFiles(CurrentGameData.Id, CurrentGameData.GameFiles);
+                        try
+                        {
+                            log("Saving game data cache.");
+                            SetCacheFiles(CurrentGameData.Id, CurrentGameData.GameFiles);
+                            log("Game data cache saved.");
+                        }
+                        catch (Exception e)
+                        {
+                            log($"Failed to save game data cache. Message: {e.Message}");
+                            throw e;
+                        }
                     }
                     else
                     {
-                        log("Checking for existing cache and deleting.");
-                        ClearCachedFiles(CurrentGameData.Id);
+                        try
+                        {
+                            log("Checking for existing cache and deleting.");
+                            ClearCachedFiles(CurrentGameData.Id);
+                            log("Any existing cache has been deleted.");
+                        }
+                        catch (Exception e)
+                        {
+                            log($"Failed to delete existing game cache. Message: {e.Message}");
+                            throw e;
+                        }
                     }
                 }
+                log("Finished scanning game files.");
             }
+            else log("Game file data exists, skipping scan.");
         }
         private void ScanModFiles(Action<string> log = null, Action<int, string> progress = null)
         {
-            log("Loading modlist.");
+            log("Scanning mod files.");
+            log("Loading modlist.txt");
             var modlistPath = Path.Join(CurrentGameData.ProfilePath, "modlist.txt");
             if (File.Exists(modlistPath))
             {
@@ -117,13 +183,18 @@ namespace Kezyma.Modding.RootBuilder3.Helpers
                     .Reverse()
                     .ToList();
                 log($"Found {modList.Count} active mods.");
+
+                log("Hashing mod files.");
                 double i = 0, t = modList.Count;
+                var p = 0;
                 foreach (var mod in modList)
                 {
+                    progress(p, $"Scanning {mod}");
                     var modRootPath = Path.Join(CurrentGameData.ModsPath, mod, "Root");
                     if (Directory.Exists(modRootPath))
                     {
                         var modFiles = Directory.GetFiles(modRootPath, "*", SearchOption.AllDirectories);
+                        progress(p, $"Found {modFiles.Length} files in {mod}");
                         foreach (var file in modFiles)
                         {
                             var relativePath = RelativePath(file, modRootPath);
@@ -134,19 +205,31 @@ namespace Kezyma.Modding.RootBuilder3.Helpers
                                 CurrentGameData.ModFiles.Add(currentData);
                             }
                             currentData.Path = file;
-                            currentData.Hash = ComputeHash(file);
+                            try
+                            {
+                                currentData.Hash = ComputeHash(file);
+                                progress(p, $"Hashed {relativePath}");
+                            }
+                            catch (Exception e)
+                            {
+                                progress(p, $"Failed to hash {relativePath} Message: {e.Message}");
+                                throw e;
+                            }
                         }
                     }
+                    else progress(p, $"{mod} has no root folder.");
                     i++;
-                    progress((int)(i / t * 100), $"Scanned {mod}");
+                    p = (int)(i / t * 100);
+                    progress(p, $"Scanned {mod}");
                 }
 
-                log("Scanning overwrite.");
+                log("Hashing overwrite.");
                 var overwriteRoot = Path.Join(CurrentGameData.OverwritePath, "Root");
                 if (Directory.Exists(overwriteRoot))
                 {
                     var overwriteFiles = Directory.GetFiles(overwriteRoot, "*", SearchOption.AllDirectories);
-                    i = 0; 
+                    log($"Found {overwriteFiles.Length} overwrite files.");
+                    i = 0;
                     t = overwriteFiles.Count();
                     foreach (var file in overwriteFiles)
                     {
@@ -158,13 +241,27 @@ namespace Kezyma.Modding.RootBuilder3.Helpers
                             CurrentGameData.ModFiles.Add(currentData);
                         }
                         currentData.Path = file;
-                        currentData.Hash = ComputeHash(file);
                         i++;
-                        progress((int)(i / t * 100), $"Scanned {relativePath}");
+                        try
+                        {
+                            currentData.Hash = ComputeHash(file);
+                            progress((int)(i / t * 100), $"Hashed {relativePath}");
+                        }
+                        catch (Exception e)
+                        {
+                            progress(p, $"Failed to hash {relativePath} Message: {e.Message}");
+                            throw e;
+                        }
                     }
                 }
+                else log("Could not find overwrite directory.");
 
-                progress(0, $"Scanned {CurrentGameData.ModFiles.Count} mod files.");
+                progress(0, $"Identified {CurrentGameData.ModFiles.Count} mod files.");
+            }
+            else 
+            { 
+                log("Could not find modlist.txt");
+                throw new FileNotFoundException($"Could not find {modlistPath}", modlistPath);
             }
         }
         private void BackupGameFiles(Action<string> log = null, Action<int, string> progress = null)
@@ -173,6 +270,7 @@ namespace Kezyma.Modding.RootBuilder3.Helpers
             {
                 log("Backing up game files.");
                 double i = 0, t = CurrentGameData.GameFiles.Count;
+                log($"Found {t} game files.");
                 foreach (var file in CurrentGameData.GameFiles)
                 {
                     var backupPath = Path.Join(RootBuilderBackupPath(CurrentGameData.Id), file.RelativePath);
@@ -181,11 +279,19 @@ namespace Kezyma.Modding.RootBuilder3.Helpers
                     i++;
                     if (!File.Exists(backupPath))
                     {
-                        File.Copy(file.Path, backupPath);
-                        progress((int)(i / t * 100), $"Backed up {file.RelativePath}");
+                        try
+                        {
+                            File.Copy(file.Path, backupPath);
+                            progress((int)(i / t * 100), $"Backed up {file.RelativePath}");
+                        }
+                        catch (Exception e)
+                        {
+                            progress((int)(i / t * 100), $"Could not back up {file.RelativePath} Message: {e.Message}");
+                            throw e;
+                        }
                     }
                 }
-                progress(0, $"Files backed up.");
+                log($"Game files backed up.");
             }
             else
             {
@@ -194,6 +300,7 @@ namespace Kezyma.Modding.RootBuilder3.Helpers
                     .Intersect(CurrentGameData.ModFiles.Select(x => x.RelativePath))
                     .ToList();
                 double i = 0, t = conflicts.Count;
+                log($"Found {t} conflicts.");
                 foreach (var file in conflicts)
                 {
                     var gameFile = CurrentGameData.GameFiles.FirstOrDefault(x => x.RelativePath == file);
@@ -201,10 +308,18 @@ namespace Kezyma.Modding.RootBuilder3.Helpers
                     i++;
                     if (!File.Exists(backupPath))
                     {
-                        var backupDir = Directory.GetParent(backupPath);
-                        if (!backupDir.Exists) backupDir.Create();
-                        File.Copy(gameFile.Path, backupPath, true);
-                        progress((int)(i / t * 100), $"Backed up {file}");
+                        try
+                        {
+                            var backupDir = Directory.GetParent(backupPath);
+                            if (!backupDir.Exists) backupDir.Create();
+                            File.Copy(gameFile.Path, backupPath, true);
+                            progress((int)(i / t * 100), $"Backed up {gameFile.RelativePath}");
+                        }
+                        catch (Exception e)
+                        {
+                            progress((int)(i / t * 100), $"Could not back up {gameFile.RelativePath} Message: {e.Message}");
+                            throw e;
+                        }
                     }
                 }
                 log("Conflicts backed up.");
@@ -214,20 +329,30 @@ namespace Kezyma.Modding.RootBuilder3.Helpers
         {
             log("Deploying mod files.");
             double i = 0, t = CurrentGameData.ModFiles.Count;
+            log($"Found {t} mod files to deploy.");
             foreach (var modFile in CurrentGameData.ModFiles)
             {
                 var gamePath = Path.Join(CurrentGameData.GamePath, modFile.RelativePath);
                 var gameParent = Directory.GetParent(gamePath);
-                if (!gameParent.Exists)
-                {
-                    gameParent.Create();
-                    CurrentGameData.CreatedDirectories.Add(gameParent.ToString());
-                }
-                File.Copy(modFile.Path, gamePath, true);
                 i++;
-                progress((int)(i / t * 100), $"Deployed {modFile.RelativePath}");
+                try
+                {
+                    if (!gameParent.Exists)
+                    {
+                        gameParent.Create();
+                        CurrentGameData.CreatedDirectories.Add(gameParent.ToString());
+                    }
+                    File.Copy(modFile.Path, gamePath, true); 
+                    progress((int)(i / t * 100), $"Deployed {modFile.RelativePath}");
+                }
+                catch (Exception e)
+                {
+                    progress((int)(i / t * 100), $"Could not deploy {modFile.RelativePath} Message: {e.Message}");
+                    throw e;
+                }
+                
             }
-            progress(0, "Mod files deployed.");
+            log("Mod files deployed.");
         }
         #endregion
 
@@ -237,8 +362,18 @@ namespace Kezyma.Modding.RootBuilder3.Helpers
             {
                 ScanModFiles(log, progress);
 
-                log("Scanning game files.");
-                var gameFiles = GetCurrentGameFolderFiles();
+                log("Finding current game files.");
+                List<string> gameFiles;
+                try
+                {
+                    gameFiles = GetCurrentGameFolderFiles();
+                    log($"Found {gameFiles.Count} game files.");
+                }
+                catch (Exception e)
+                {
+                    log($"Could not find game files. Message: {e.Message}");
+                    throw e;
+                }
 
                 double i = 0, t = gameFiles.Count;
                 foreach (var file in gameFiles)
@@ -252,42 +387,81 @@ namespace Kezyma.Modding.RootBuilder3.Helpers
                         var currentHash = ComputeHash(file);
                         if (currentHash != modFile.Hash)
                         {
-                            modFile.Hash = currentHash;
-                            File.Copy(file, modFile.Path, true);
-                            progress((int)(i / t * 100), $"Updated: {relativePath}");
+                            try
+                            {
+                                modFile.Hash = currentHash;
+                                File.Copy(file, modFile.Path, true);
+                                progress((int)(i / t * 100), $"Updated {relativePath}");
+                            }
+                            catch (Exception e)
+                            {
+                                progress((int)(i / t * 100), $"Could not update {relativePath} Message: {e.Message}");
+                                throw e;
+                            }
                         }
+                        else progress((int)(i / t * 100), $"File has not changed: {relativePath}");
                     }
                     // Else if the file is in the list of game files and has changed and has a backup, copy it to the overwrite folder.
                     else if (CurrentGameData.GameFiles.Any(x => x.RelativePath == relativePath))
                     {
                         var gameFile = CurrentGameData.GameFiles.FirstOrDefault(x => x.RelativePath == relativePath);
                         var backupPath = Path.Join(RootBuilderBackupPath(CurrentGameId), relativePath);
-                        if (File.Exists(backupPath) && ComputeHash(file) != gameFile.Hash)
+                        if (ComputeHash(file) != gameFile.Hash)
                         {
-                            var overwritePath = Path.Join(CurrentGameData.OverwritePath, "Root", relativePath);
-                            var parentPath = Directory.GetParent(overwritePath);
-                            if (!parentPath.Exists) parentPath.Create();
-                            File.Copy(file, overwritePath, true);
-                            progress((int)(i / t * 100), $"Overwrite (Changed): {relativePath}");
+                            if (File.Exists(backupPath))
+                            {
+                                var overwritePath = Path.Join(CurrentGameData.OverwritePath, "Root", relativePath);
+                                var parentPath = Directory.GetParent(overwritePath);
+                                try
+                                {
+                                    if (!parentPath.Exists) parentPath.Create();
+                                    File.Copy(file, overwritePath, true);
+                                    progress((int)(i / t * 100), $"Copied {relativePath} to overwrite.");
+                                }
+                                catch (Exception e)
+                                {
+                                    progress((int)(i / t * 100), $"Could not copy {relativePath} to overwrite. Message: {e.Message}");
+                                    throw e;
+                                }
+                            }
+                            else progress((int)(i / t * 100), $"File changed, but has no backup: {relativePath}");
                         }
+                        else progress((int)(i / t * 100), $"File has not changed: {relativePath}");
                     }
                     // If the file does not exist in either list, copy it back to the overwrite folder.
                     else
                     {
                         var overwritePath = Path.Join(CurrentGameData.OverwritePath, "Root", relativePath);
                         var parentPath = Directory.GetParent(overwritePath);
-                        if (!parentPath.Exists) parentPath.Create();
-                        File.Copy(file, overwritePath, true);
-                        progress((int)(i / t * 100), $"Overwrite (New): {relativePath}");
+                        try
+                        {
+                            if (!parentPath.Exists) parentPath.Create();
+                            File.Copy(file, overwritePath, true);
+                            progress((int)(i / t * 100), $"Copied {relativePath} to overwrite.");
+                        }
+                        catch (Exception e)
+                        {
+                            progress((int)(i / t * 100), $"Could not copy {relativePath} to overwrite. Message: {e.Message}");
+                            throw e;
+                        }
                     }
                 }
-                progress(0, "Updated mod files.");
-                SaveRootBuilderData();
+
+                try
+                {
+                    log("Saving RootBuilder data.");
+                    SaveRootBuilderData();
+                    log("Saved RootBuilder data.");
+                }
+                catch (Exception e)
+                {
+                    log($"Could not save RootBuilder data. Message: {e.Message}");
+                    throw e;
+                }
+
+                log("Finished updating mod files.");
             }
-            else
-            {
-                log($"Not built.");
-            }
+            else log($"Cancelling sync. Not yet built.");
         }
         public void Clear(Action<string> log = null, Action<int, string> progress = null)
         {
@@ -296,9 +470,18 @@ namespace Kezyma.Modding.RootBuilder3.Helpers
                 // Sync the current files
                 Sync(log, progress);
 
-                // Get list of current game files
-                log("Scanning game files.");
-                var gameFiles = GetCurrentGameFolderFiles();
+                log("Finding current game files.");
+                List<string> gameFiles;
+                try
+                {
+                    gameFiles = GetCurrentGameFolderFiles();
+                    log($"Found {gameFiles.Count} game files.");
+                }
+                catch (Exception e)
+                {
+                    log($"Could not find game files. Message: {e.Message}");
+                    throw e;
+                }
 
                 double i = 0, t = gameFiles.Count;
                 // Loop over list of current game files
@@ -310,20 +493,26 @@ namespace Kezyma.Modding.RootBuilder3.Helpers
                     {
                         var gameFile = CurrentGameData.GameFiles.FirstOrDefault(x => x.RelativePath == relativePath);
                         var backupPath = Path.Join(RootBuilderBackupPath(CurrentGameId), relativePath);
-                        if (File.Exists(backupPath) && ComputeHash(file) != gameFile.Hash)
+                        if (ComputeHash(file) != gameFile.Hash)
                         {
-                            // Restore any vanilla files that have changed.
-                            try
+                            if (File.Exists(backupPath))
                             {
-                                File.Delete(file);
-                                File.Copy(backupPath, file, true);
-                                progress((int)(i / t * 100), $"Restored: {relativePath}");
+                                // Restore any vanilla files that have changed.
+                                try
+                                {
+                                    File.Delete(file);
+                                    File.Copy(backupPath, file, true);
+                                    progress((int)(i / t * 100), $"Restored {relativePath}");
+                                }
+                                catch (Exception e)
+                                {
+                                    log($"Failed to restore {relativePath} Message: {e.Message}");
+                                    throw e;
+                                }
                             }
-                            catch (Exception e)
-                            {
-                                log($"Restore failed: {relativePath} Message: {e.Message}");
-                            }
+                            else progress((int)(i / t * 100), $"File has changed but has no backup: {relativePath}");
                         }
+                        else progress((int)(i / t * 100), $"File has not changed: {relativePath}");
                     }
                     else
                     {
@@ -331,17 +520,18 @@ namespace Kezyma.Modding.RootBuilder3.Helpers
                         try
                         {
                             File.Delete(file);
-                            progress((int)(i / t * 100), $"Deleted: {relativePath}");
+                            progress((int)(i / t * 100), $"Deleted {relativePath}");
                         }
                         catch (Exception e)
                         {
-                            log($"Delete failed: {relativePath} Message: {e.Message}");
+                            log($"Failed to delete {relativePath} Message: {e.Message}");
+                            throw e;
                         }
                     }
                 }
-                progress(0, "Copied files deleted.");
+                log("Original files have been restored.");
 
-                log("Deleting empty folders.");
+                log("Deleting created folders.");
                 // Delete any created directories.
                 if (CurrentGameData.CreatedDirectories != null)
                     foreach (var dir in CurrentGameData.CreatedDirectories)
@@ -353,23 +543,42 @@ namespace Kezyma.Modding.RootBuilder3.Helpers
                             catch (Exception e)
                             {
                                 log($"Delete failed: {dir} Message: {e.Message}");
+                                throw e;
                             }
-                log("Empty folders deleted.");
+                log("Deleted all created folders.");
 
                 if (!CurrentGameData.Backup)
                 {
                     log("Deleting backup files.");
-                    // Clear any backed up files
-                    Directory.Delete(RootBuilderBackupPath(CurrentGameId), true);
-                    log("Backup files deleted.");
+                    try
+                    {
+                        Directory.Delete(RootBuilderBackupPath(CurrentGameId), true);
+                        log("Backup files deleted.");
+                    }
+                    catch (Exception e)
+                    {
+                        log("Failed to delete backup files.");
+                        throw e;
+                    }
                 }
 
                 CurrentGameData.GameFiles = new List<RootBuilderFileData>();
                 CurrentGameData.ModFiles = new List<RootBuilderFileData>();
                 CurrentGameData.CreatedDirectories = new List<string>();
                 CurrentGameData.Built = false;
-                SaveRootBuilderData();
-                log("Root data cleared.");
+                try
+                {
+                    log("Saving RootBuilder data.");
+                    SaveRootBuilderData();
+                    log("Saved RootBuilder data.");
+                }
+                catch (Exception e)
+                {
+                    log($"Could not save RootBuilder data. Message: {e.Message}");
+                    throw e;
+                }
+
+                log("Finished clearing.");
             }
         }
 
