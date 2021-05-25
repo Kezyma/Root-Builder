@@ -434,7 +434,7 @@ namespace Kezyma.Modding.RootBuilder3.Helpers
                     profilePath = string.Empty,
                     modsPath = string.Empty,
                     overwritePath = string.Empty,
-                    moPath = Directory.GetParent(iniPath).ToString();
+                    basePath = Directory.GetParent(iniPath).ToString();
 
                 foreach (var setting in iniSettings)
                 {
@@ -444,27 +444,24 @@ namespace Kezyma.Modding.RootBuilder3.Helpers
                         profile = profileRegex.Match(setting).Groups["profile"].Value;
                     if (gamePathRegex.IsMatch(setting))
                         gamePath = Path.GetFullPath(gamePathRegex.Match(setting).Groups["gamePath"].Value);
+                    if (setting.StartsWith("base_directory="))
+                        basePath = setting.Replace("base_directory=", "");
                     if (setting.StartsWith("mod_directory="))
-                    {
                         modsPath = setting.Replace("mod_directory=", "");
-                        if (modsPath.Contains("%BASE_DIR%")) modsPath = Path.Join(moPath, modsPath.Replace("%BASE_DIR%", ""));
-                    }
                     if (setting.StartsWith("profiles_directory="))
-                    {
                         profilePath = setting.Replace("profiles_directory=", "");
-                        if (profilePath.Contains("%BASE_DIR%")) profilePath = Path.Join(moPath, profilePath.Replace("%BASE_DIR%", ""));
-                    }
                     if (setting.StartsWith("overwrite_directory="))
-                    {
                         overwritePath = setting.Replace("overwrite_directory=", "");
-                        if (overwritePath.Contains("%BASE_DIR%")) overwritePath = Path.Join(moPath, overwritePath.Replace("%BASE_DIR%", ""));
-                    }
                 }
 
+                if (modsPath.Contains("%BASE_DIR%")) modsPath = modsPath.Replace("%BASE_DIR%", basePath);
+                if (profilePath.Contains("%BASE_DIR%")) profilePath = profilePath.Replace("%BASE_DIR%", basePath);
+                if (overwritePath.Contains("%BASE_DIR%")) overwritePath = overwritePath.Replace("%BASE_DIR%", basePath);
+
                 if (string.IsNullOrWhiteSpace(profile)) profile = "Default";
-                if (string.IsNullOrWhiteSpace(modsPath)) modsPath = Path.Join(moPath, "mods");
-                if (string.IsNullOrWhiteSpace(profilePath)) profilePath = Path.Join(moPath, "profiles");
-                if (string.IsNullOrWhiteSpace(overwritePath)) overwritePath = Path.Join(moPath, "overwrite");
+                if (string.IsNullOrWhiteSpace(modsPath)) modsPath = Path.Join(basePath, "mods");
+                if (string.IsNullOrWhiteSpace(profilePath)) profilePath = Path.Join(basePath, "profiles");
+                if (string.IsNullOrWhiteSpace(overwritePath)) overwritePath = Path.Join(basePath, "overwrite");
 
                 var currentProfilePath = Path.Join(profilePath, profile);
                 var gameId = FileSafePath(gamePath);
