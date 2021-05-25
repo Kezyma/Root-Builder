@@ -5,6 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Reflection.Metadata.Ecma335;
@@ -28,6 +30,27 @@ namespace Kezyma.Modding.RootBuilder3.Helpers
         }
 
         private bool _debug;
+
+        #region Icons
+        public Image GetCurrentIcon()
+        {
+            if (!string.IsNullOrWhiteSpace(CurrentGameData.Icon))
+            {
+                byte[] bytes = Convert.FromBase64String(CurrentGameData.Icon);
+                using MemoryStream stream = new MemoryStream(bytes);
+                return Image.FromStream(stream);
+            }
+            var icon = new IconLoader(RootBuilderData.IconSources).GetIconForPath(CurrentGameData.GamePath, Process.GetCurrentProcess().MainModule.FileName).ToBitmap();
+            using MemoryStream memoryStream = new MemoryStream();
+            icon.Save(memoryStream, ImageFormat.Png);
+            byte[] bitmapBytes = memoryStream.GetBuffer();
+            CurrentGameData.Icon = Convert.ToBase64String(bitmapBytes, Base64FormattingOptions.InsertLineBreaks);
+            SaveRootBuilderData();
+            return icon;
+        }
+
+        public Image GetDefaultIcon() => new IconLoader(new string[] {}).GetIconForPath("", Process.GetCurrentProcess().MainModule.FileName).ToBitmap();
+        #endregion
 
         #region Build
         public void Build(Action<string> log = null, Action<int, string> progress = null)

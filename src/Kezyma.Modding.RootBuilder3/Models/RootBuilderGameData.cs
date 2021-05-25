@@ -27,6 +27,7 @@ namespace Kezyma.Modding.RootBuilder3.Models
         public bool Backup { get; set; }
         public bool Cache { get; set; }
         public bool Built { get; set; }
+        public string Icon { get; set; }
 
         public List<RootBuilderFileData> GameFiles { get; set; }
         public List<RootBuilderFileData> ModFiles { get; set; }

@@ -63,7 +63,7 @@ class RootBuilderBase(mobase.IPluginTool):
 
 class RootBuilder(RootBuilderBase):
     def __init__(self):
-        super(RootBuilder, self).__init__()
+        super().__init__()
 
     def displayName(self):
         return "Root Builder/-GUI-"
@@ -79,7 +79,7 @@ class RootBuilder(RootBuilderBase):
 
 class RootBuilderBuild(RootBuilderBase):
     def __init__(self):
-        super(RootBuilderBuild, self).__init__()
+        super().__init__()
 
     def displayName(self):
         return "Root Builder/Build"
@@ -95,7 +95,7 @@ class RootBuilderBuild(RootBuilderBase):
 
 class RootBuilderSync(RootBuilderBase):
     def __init__(self):
-        super(RootBuilderSync, self).__init__()
+        super().__init__()
 
     def displayName(self):
         return "Root Builder/Sync"
@@ -111,7 +111,7 @@ class RootBuilderSync(RootBuilderBase):
 
 class RootBuilderClear(RootBuilderBase):
     def __init__(self):
-        super(RootBuilderClear, self).__init__()
+        super().__init__()
 
     def displayName(self):
         return "Root Builder/Clear"

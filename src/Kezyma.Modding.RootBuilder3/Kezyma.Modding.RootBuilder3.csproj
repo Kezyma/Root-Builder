@@ -42,4 +42,13 @@
     </None>
   </ItemGroup>
 
+  <Target Name="PublishMOPlugin" AfterTargets="Publish">
+    <Copy SourceFiles="RootBuilder.py" DestinationFolder="$(PublishDir)" />
+  </Target>
+  <Target Name="PublishMOIcon" AfterTargets="Publish">
+    <Copy SourceFiles="RootBuilder.ico" DestinationFolder="$(PublishDir)" />
+  </Target>
+  <Target Name="PublishReadme" AfterTargets="Publish">
+    <Copy SourceFiles="readme.txt" DestinationFolder="$(PublishDir)" />
+  </Target>
 </Project>

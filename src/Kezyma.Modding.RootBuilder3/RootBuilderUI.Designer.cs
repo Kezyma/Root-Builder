@@ -48,7 +48,9 @@ namespace Kezyma.Modding.RootBuilder3
             this.btnShowLog = new System.Windows.Forms.Button();
             this.ddlSelectedGame = new System.Windows.Forms.ComboBox();
             this.btnDelete = new System.Windows.Forms.Button();
+            this.icnCurrentGame = new System.Windows.Forms.PictureBox();
             this.strStatus.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.icnCurrentGame)).BeginInit();
             this.SuspendLayout();
             // 
             // strStatus
@@ -212,9 +214,9 @@ namespace Kezyma.Modding.RootBuilder3
             // ddlSelectedGame
             // 
             this.ddlSelectedGame.FormattingEnabled = true;
-            this.ddlSelectedGame.Location = new System.Drawing.Point(12, 13);
+            this.ddlSelectedGame.Location = new System.Drawing.Point(41, 13);
             this.ddlSelectedGame.Name = "ddlSelectedGame";
-            this.ddlSelectedGame.Size = new System.Drawing.Size(476, 23);
+            this.ddlSelectedGame.Size = new System.Drawing.Size(447, 23);
             this.ddlSelectedGame.TabIndex = 37;
             this.ddlSelectedGame.SelectedIndexChanged += new System.EventHandler(this.ddlSelectedGame_SelectedIndexChanged);
             // 
@@ -228,6 +230,15 @@ namespace Kezyma.Modding.RootBuilder3
             this.btnDelete.UseVisualStyleBackColor = true;
             this.btnDelete.Click += new System.EventHandler(this.btnDelete_Click);
             // 
+            // icnCurrentGame
+            // 
+            this.icnCurrentGame.Location = new System.Drawing.Point(12, 13);
+            this.icnCurrentGame.Name = "icnCurrentGame";
+            this.icnCurrentGame.Size = new System.Drawing.Size(23, 23);
+            this.icnCurrentGame.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.icnCurrentGame.TabIndex = 39;
+            this.icnCurrentGame.TabStop = false;
+            // 
             // RootBuilderUI
             // 
             this.AcceptButton = this.btnBuild;
@@ -235,6 +246,7 @@ namespace Kezyma.Modding.RootBuilder3
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.ClientSize = new System.Drawing.Size(581, 291);
+            this.Controls.Add(this.icnCurrentGame);
             this.Controls.Add(this.btnDelete);
             this.Controls.Add(this.ddlSelectedGame);
             this.Controls.Add(this.btnShowLog);
@@ -256,6 +268,7 @@ namespace Kezyma.Modding.RootBuilder3
             this.Text = "Kezyma\'s Root Builder for Mod Organizer 2";
             this.strStatus.ResumeLayout(false);
             this.strStatus.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.icnCurrentGame)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -281,6 +294,7 @@ namespace Kezyma.Modding.RootBuilder3
         private System.Windows.Forms.Button btnShowLog;
         private System.Windows.Forms.ComboBox ddlSelectedGame;
         private System.Windows.Forms.Button btnDelete;
+        private System.Windows.Forms.PictureBox icnCurrentGame;
     }
 }
 

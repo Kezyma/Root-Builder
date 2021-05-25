@@ -70,6 +70,7 @@ namespace Kezyma.Modding.RootBuilder3
                 lblMOProfile.Text = $"Profile: {_rootBuilder.CurrentGameData.Profile}";
                 lblMOini.Text = _rootBuilder.CurrentGameData.MOIniPath;
                 ddlSelectedGame.SelectedItem = _rootBuilder.GameList.First(x => x.Key == _rootBuilder.CurrentGameData.Id);
+                icnCurrentGame.Image = _rootBuilder.GetCurrentIcon();
             }
             else
             {
@@ -78,6 +79,7 @@ namespace Kezyma.Modding.RootBuilder3
                 lblMOProfile.Text = $"Profile: ...";
                 lblMOini.Text = "...";
                 ddlSelectedGame.SelectedItem = null;
+                icnCurrentGame.Image = _rootBuilder.GetDefaultIcon();
             }
             btnSelectMOini.Enabled = true;
         }
