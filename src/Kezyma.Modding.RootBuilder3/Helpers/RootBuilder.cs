@@ -716,7 +716,13 @@ namespace Kezyma.Modding.RootBuilder3.Helpers
         #region Game Data Cache
         private bool CacheExists(string gameId) => File.Exists(RootBuilderCachePath(gameId));
         private List<RootBuilderFileData> GetCacheFiles(string gameId) => JsonConvert.DeserializeObject<List<RootBuilderFileData>>(File.ReadAllText(RootBuilderCachePath(gameId)));
-        private void SetCacheFiles(string gameId, List<RootBuilderFileData> files) => File.WriteAllText(RootBuilderCachePath(gameId), JValue.Parse(JsonConvert.SerializeObject(files)).ToString(Formatting.Indented));
+        private void SetCacheFiles(string gameId, List<RootBuilderFileData> files) 
+        {
+            var path = RootBuilderCachePath(gameId);
+            var dir = Directory.GetParent(path);
+            if (!dir.Exists) dir.Create();
+            File.WriteAllText(path, JValue.Parse(JsonConvert.SerializeObject(files)).ToString(Formatting.Indented)); 
+        }
         private void ClearCachedFiles(string gameId)
         {
             if (File.Exists(RootBuilderCachePath(gameId)))
