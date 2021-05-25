@@ -178,10 +178,12 @@ namespace Kezyma.Modding.RootBuilder3.Helpers
                     var backupPath = Path.Join(RootBuilderBackupPath(CurrentGameData.Id), file.RelativePath);
                     var backupDir = Directory.GetParent(backupPath);
                     if (!backupDir.Exists) backupDir.Create();
-                    if (!File.Exists(backupPath))
-                        File.Copy(file.Path, backupPath);
                     i++;
-                    progress((int)(i / t * 100), $"Backed up {file.RelativePath}");
+                    if (!File.Exists(backupPath))
+                    {
+                        File.Copy(file.Path, backupPath);
+                        progress((int)(i / t * 100), $"Backed up {file.RelativePath}");
+                    }
                 }
                 progress(0, $"Files backed up.");
             }
@@ -196,14 +198,14 @@ namespace Kezyma.Modding.RootBuilder3.Helpers
                 {
                     var gameFile = CurrentGameData.GameFiles.FirstOrDefault(x => x.RelativePath == file);
                     var backupPath = Path.Join(RootBuilderBackupPath(CurrentGameData.Id), file);
+                    i++;
                     if (!File.Exists(backupPath))
                     {
                         var backupDir = Directory.GetParent(backupPath);
                         if (!backupDir.Exists) backupDir.Create();
                         File.Copy(gameFile.Path, backupPath, true);
+                        progress((int)(i / t * 100), $"Backed up {file}");
                     }
-                    i++;
-                    progress((int)(i / t * 100), $"Backed up {file}");
                 }
                 log("Conflicts backed up.");
             }
@@ -233,6 +235,8 @@ namespace Kezyma.Modding.RootBuilder3.Helpers
         {
             if (CurrentGameData.Built)
             {
+                ScanModFiles(log, progress);
+
                 log("Scanning game files.");
                 var gameFiles = GetCurrentGameFolderFiles();
 
@@ -309,16 +313,30 @@ namespace Kezyma.Modding.RootBuilder3.Helpers
                         if (File.Exists(backupPath) && ComputeHash(file) != gameFile.Hash)
                         {
                             // Restore any vanilla files that have changed.
-                            File.Delete(file);
-                            File.Copy(backupPath, file, true);
-                            progress((int)(i / t * 100), $"Restored: {relativePath}");
+                            try
+                            {
+                                File.Delete(file);
+                                File.Copy(backupPath, file, true);
+                                progress((int)(i / t * 100), $"Restored: {relativePath}");
+                            }
+                            catch (Exception e)
+                            {
+                                log($"Restore failed: {relativePath} Message: {e.Message}");
+                            }
                         }
                     }
                     else
                     {
                         // Clear any new files.
-                        File.Delete(file);
-                        progress((int)(i / t * 100), $"Deleted: {relativePath}");
+                        try
+                        {
+                            File.Delete(file);
+                            progress((int)(i / t * 100), $"Deleted: {relativePath}");
+                        }
+                        catch (Exception e)
+                        {
+                            log($"Delete failed: {relativePath} Message: {e.Message}");
+                        }
                     }
                 }
                 progress(0, "Copied files deleted.");
@@ -328,7 +346,14 @@ namespace Kezyma.Modding.RootBuilder3.Helpers
                 if (CurrentGameData.CreatedDirectories != null)
                     foreach (var dir in CurrentGameData.CreatedDirectories)
                         if (Directory.Exists(dir))
-                            Directory.Delete(dir, true);
+                            try
+                            {
+                                Directory.Delete(dir, true);
+                            }
+                            catch (Exception e)
+                            {
+                                log($"Delete failed: {dir} Message: {e.Message}");
+                            }
                 log("Empty folders deleted.");
 
                 if (!CurrentGameData.Backup)

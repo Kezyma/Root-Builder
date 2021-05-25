@@ -26,8 +26,23 @@ Meshes\VeryPrettyModel.nif
 Where the esp file and the Meshes and Textures will be picked up by Mod Organizer as usual, but the files intended for the base game folder are now in a subfolder called Root.
 
 ##########
+Plugin Setup
+##########
+If you would like to use Root Builder as a plugin, copy the entire RootBuilder folder into your Mod Organizer's plugin folder.
+Assuming Mod Organizer is installed at D:/MO/ the plugin folder is at D:/MO/plugins
+
+When you launch Mod Organizer, Root Builder will be added to your tools menu.
+There are four options;
+-GUI- which launches Root Builder using the current profile.
+Build, Sync and Clear which run Root Builder with different command line arguments.
+
+There are also settings to enable cache, backup and debug mode (these only matter for the Build, Sync and Clear commands).
+
+##########
 Root Builder Setup
 ##########
+
+If you are not using Root Builder as a Mod Organizer plugin, you only need the RootBuilder3.exe file, the python scripts and icon file are exclusively for the Mod Organizer plugin.
 
 Run RootBuilder3.exe, you can do this inside or outside of Mod Organizer, it should work either way.
 
@@ -61,6 +76,7 @@ Sync is used to update the files in your mods folders with any changes that have
 
 When you click on Sync, the following things will happen.
 - All files in the base game folder will be scanned.
+- Your current modlist will be updated.
 - Any files that came from mods and that have changed will be copied back to the original mod folder.
 - Any original game files that have changed and that have a backup available will be copied to the overwrite folder.
 	- Files without a backup available will be left where they are, to prevent possible complications later.
