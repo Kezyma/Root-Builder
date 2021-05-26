@@ -649,10 +649,17 @@ namespace Kezyma.Modding.RootBuilder3.Helpers
                 {
                     if (setting.StartsWith("gameName="))
                         game = setting.Replace("gameName=", "");
+
                     if (profileRegex.IsMatch(setting))
                         profile = profileRegex.Match(setting).Groups["profile"].Value;
+                    else if (setting.StartsWith("selected_profile="))
+                        gamePath = setting.Replace("selected_profile=", "");
+
                     if (gamePathRegex.IsMatch(setting))
                         gamePath = Path.GetFullPath(gamePathRegex.Match(setting).Groups["gamePath"].Value);
+                    else if (setting.StartsWith("gamePath="))
+                        gamePath = setting.Replace("gamePath=", "");
+
                     if (setting.StartsWith("base_directory="))
                         basePath = setting.Replace("base_directory=", "");
                     if (setting.StartsWith("mod_directory="))
