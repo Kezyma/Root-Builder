@@ -5,7 +5,6 @@ from . import autorootpaths as arp
 from . import autorootfiles as arf
 from . import autorootmapper as arm
 from . import autorootbackup as arb
-from . import autorootredirect as arr
 from . import autorootlinker as arl
 
 class AutoRoot(mobase.IPluginFileMapper):
@@ -21,7 +20,6 @@ class AutoRoot(mobase.IPluginFileMapper):
         self._files = arf.AutoRootFiles(organizer, self._paths)
         self._mapper = arm.AutoRootMapper(organizer, self._paths, self._files)
         self._backup = arb.AutoRootBackup(organizer, self._paths, self._files)
-        self._redirect = arr.AutoRootRedirect(organizer, self._paths)
         self._linker = arl.AutoRootLinker(organizer, self._paths, self._files)
         self.startingRootExe = False
 
@@ -80,9 +78,8 @@ class AutoRoot(mobase.IPluginFileMapper):
         if (self.startingRootExe == False):
             self._backup.backup(self.cacheEnabled(), self.backupEnabled())
             self._linker.build()
-            res = self._redirect.redirect(appName)
-
-        qInfo("AutoRoot: Build complete.")
+            res = self.redirect(appName)
+            
         return res
 
     def clear(self, appName, resultCode):
@@ -94,3 +91,31 @@ class AutoRoot(mobase.IPluginFileMapper):
         
         qInfo("AutoRoot: Clear complete.")
         return
+
+    #region Redirect
+    def redirect(self, appName):        
+        # Identify if the app is from a root mod folder
+        if self._paths.sharedPath(self._paths.modPath(), appName):
+            # this is a mod exe, time to redirect
+            qInfo("AutoRoot: Mod root exe launch detected, preventing initial launch.")
+            self.startingRootExe = True
+
+            # Find path to linked exe in game folder
+            fileRootPath = self._paths.rootRelativePath(appName)
+            linkedExePath = self._paths.gamePath() / fileRootPath
+            # Check that it actually exists in the game folder
+            if (linkedExePath.exists()):
+                # Launch the new exe file
+                qInfo("AutoRoot: Redirecting to " + str(linkedExePath))
+                result, exitCode = self._org.waitForApplication(
+                    self._org.startApplication(str(linkedExePath)))
+
+                # We're done, close and prevent it from continuing with the original run
+                qInfo("AutoRoot: Application closed.")
+                self.startingRootExe = False
+                return False
+            else:
+                qInfo("AutoRoot: Could not find game exe, resuming initial launch.")
+        # This isn't in a root mod folder, launch it
+        return True 
+    #endregion
