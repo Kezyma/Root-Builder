@@ -61,7 +61,7 @@ class AutoRootBackup():
                     os.makedirs(os.path.dirname(backupPath))
                 copy2(str(file), str(backupPath))
 
-        if cache == True & updateCache == True:
+        if cache == True and updateCache == True:
             qInfo("AutoRoot: Updating cache.")
             if not self._paths.rootCachePath().exists():
                 self._paths.rootCachePath().touch()

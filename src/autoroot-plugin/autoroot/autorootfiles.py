@@ -93,7 +93,7 @@ class AutoRootFiles():
         modslist = self._org.modList().allModsByProfilePriority()
         rootMods = []
         for mod in modslist:
-            if (self._org.modList().state(mod) & mobase.ModState.active):
+            if (self._org.modList().state(mod) and mobase.ModState.active):
                 if (self._paths.modPath() / mod / "Root").exists():
                     qInfo("AutoRoot: Found root folder in " + mod)
                     exclude = False
