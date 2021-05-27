@@ -42,11 +42,7 @@ class AutoRootTool(mobase.IPluginTool):
         return self._org.pluginSetting(self.name(), "cache")
 
     def settings(self):
-        return [
-            mobase.PluginSetting("enabled",self.__tr("Enable"),True),
-            mobase.PluginSetting("cache",self.__tr("Cache"), True),
-            mobase.PluginSetting("backup",self.__tr("Backup"), True)
-            ]
+        return []
 
     def __tr(self, trstr):
         return QCoreApplication.translate("AutoRootTool", trstr)
