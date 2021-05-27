@@ -33,13 +33,13 @@ class AutoRootTool(mobase.IPluginTool):
         return mobase.VersionInfo(0, 0, 1, mobase.ReleaseType.alpha)
 
     def isActive(self):
-        return self._org.pluginSetting(self.name(), "enabled")
+        return self._org.pluginSetting("AutoRoot", "enabled")
 
     def backupEnabled(self):
-        return self._org.pluginSetting(self.name(), "backup")
+        return self._org.pluginSetting("AutoRoot", "backup")
 
     def cacheEnabled(self):
-        return self._org.pluginSetting(self.name(), "cache")
+        return self._org.pluginSetting("AutoRoot", "cache")
 
     def settings(self):
         return []
