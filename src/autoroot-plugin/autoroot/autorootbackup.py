@@ -24,7 +24,7 @@ class AutoRootBackup():
             backupFiles.extend(gameFiles)
         else:
             qInfo("AutoRoot: Backup disabled, identifying conflicts.")
-            modFiles = self._files.getLinkableModFiles()
+            modFiles = self._files.getLinkableModFiles().values()
             for modFile in modFiles:
                 relativePath = self._paths.rootRelativePath(modFile)
                 existingPath = self._paths.gamePath() / relativePath
@@ -34,7 +34,7 @@ class AutoRootBackup():
             
         qInfo("AutoRoot: Loading game file data.")
         gameFileData = {}
-        if (cache == True & self._paths.rootCachePath().exists()):
+        if (cache == True and self._paths.rootCachePath().exists()):
             qInfo("AutoRoot: Cache exists, loading.")
             gameFileData = json.load(open(self._paths.rootCachePath()))
             qInfo("AutoRoot: Cache loaded.")
@@ -69,7 +69,7 @@ class AutoRootBackup():
                 json.dump(gameFileData, jsonFile)
             qInfo("AutoRoot: Cache updated.")
 
-        if cache == False & self._paths.rootCachePath().exists():
+        if cache == False and self._paths.rootCachePath().exists():
             qInfo("AutoRoot: Clearing cache.")
             os.remove(self._paths.rootCachePath())
             qInfo("AutoRoot: Cache cleared.")
@@ -118,9 +118,9 @@ class AutoRootBackup():
                     copy2(backupPath, Path(tempFile))
                     qInfo("AutoRoot: Restored " + str(tempFile) + " from backup.")
         
-        if backup == False & self._paths.rootBackupPath().exists():
+        if backup == False and self._paths.rootBackupPath().exists():
             qInfo("AutoRoot: Clearing backup files.")
-            os.rmdir(self._paths.rootBackupPath())
+            shutil.rmtree(self._paths.rootBackupPath())
             qInfo("AutoRoot: Backup files cleared.")
 
         qInfo("AutoRoot: Clearing temp data.")

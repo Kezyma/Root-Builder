@@ -78,11 +78,9 @@ class AutoRoot(mobase.IPluginFileMapper):
         res = True
         
         if (self.startingRootExe == False):
-            res = self._redirect.redirect(appName)
-
-        if (res == True):
-            self._backup.backup(self.cacheEnabled(), self.backupEnabled())
             self._linker.build()
+            self._backup.backup(self.cacheEnabled(), self.backupEnabled())
+            res = self._redirect.redirect(appName)
 
         qInfo("AutoRoot: Build complete.")
         return res
