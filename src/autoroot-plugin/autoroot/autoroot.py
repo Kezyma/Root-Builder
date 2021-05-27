@@ -33,13 +33,16 @@ class AutoRoot(mobase.IPluginFileMapper):
 
     #region Plugin Info
     def name(self):
-        return "Auto Root"
+        return "AutoRoot"
     
+    def displayName(self):  
+        return "AutoRoot"
+
     def author(self):
         return "Kezyma"
     
     def description(self):
-        return self.__tr("Does cool stuff.")
+        return self.__tr("Allows management of base game files by utilising a Root folder within individual mods.")
     
     def version(self):
         return mobase.VersionInfo(0, 0, 1, mobase.ReleaseType.alpha)

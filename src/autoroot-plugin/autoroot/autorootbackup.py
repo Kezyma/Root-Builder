@@ -29,7 +29,7 @@ class AutoRootBackup():
                 relativePath = self._paths.rootRelativePath(modFile)
                 existingPath = self._paths.gamePath() / relativePath
                 if (existingPath.exists()):
-                    qInfo("AutoRoot: Found conflict, adding " + str(modFile))
+                    qDebug("AutoRoot: Found conflict, adding " + str(modFile))
                     backupFiles.append(existingPath)
             
         qInfo("AutoRoot: Loading game file data.")
@@ -41,7 +41,7 @@ class AutoRootBackup():
         else:
             updateCache = cache
             for file in gameFiles:
-                qInfo("AutoRoot: Hashing " + str(file))
+                qDebug("AutoRoot: Hashing " + str(file))
                 gameFileData.update({str(file):str(self.hashFile(file))})
             
         qInfo("AutoRoot: Backing up files")
@@ -51,12 +51,12 @@ class AutoRootBackup():
             if (backupPath.exists()):
                 fileHash = self.hashFile(file)
                 if str(file) not in gameFileData or fileHash != gameFileData[str(file)]:
-                    qInfo("AutoRoot: File has changed, updating backup " + str(file))
+                    qDebug("AutoRoot: File has changed, updating backup " + str(file))
                     gameFileData[str(file)] = fileHash
                     copy2(str(file), str(backupPath))
                     updateCache = cache
             else:
-                qInfo("AutoRoot: Backing up " + str(file))
+                qDebug("AutoRoot: Backing up " + str(file))
                 if not os.path.exists(os.path.dirname(backupPath)):
                     os.makedirs(os.path.dirname(backupPath))
                 copy2(str(file), str(backupPath))
@@ -86,46 +86,50 @@ class AutoRootBackup():
         qInfo("AutoRoot: Restoring files.")
 
         gameFiles = self._files.getGameFileList()
-        tempData = json.load(open(self._paths.rootTempPath()))
+        if self._paths.rootTempPath().exists():
+            tempData = json.load(open(self._paths.rootTempPath()))
 
-        for gameFile in gameFiles:
-            if str(gameFile) in tempData:
-                if tempData[str(gameFile)] != self.hashFile(gameFile):
-                    qInfo("AutoRoot: File has changed " + str(gameFile))
-                    relativePath = self._paths.gameRelativePath(gameFile)
+            for gameFile in gameFiles:
+                if str(gameFile) in tempData:
+                    if tempData[str(gameFile)] != self.hashFile(gameFile):
+                        qDebug("AutoRoot: File has changed " + str(gameFile))
+                        relativePath = self._paths.gameRelativePath(gameFile)
+                        backupPath = self._paths.rootBackupPath() / relativePath
+                        if backupPath.exists():
+                            qDebug("AutoRoot: Moving " + str(gameFile) + " to overwrite.")
+                            copy2(gameFile, self._paths.rootOverwritePath() / self._paths.gameRelativePath(gameFile))
+                            qDebug("AutoRoot: Moved " + str(gameFile) + " to overwrite.")
+                            qDebug("AutoRoot: Restoring " + str(gameFile) + " from backup.")
+                            copy2(backupPath, gameFile)
+                            qDebug("AutoRoot: Restored " + str(gameFile) + " from backup.")
+                        else:
+                            qInfo("AutoRoot: No backup exists for " + str(gameFile))
+                else:
+                    qDebug("AutoRoot: New file found " + str(gameFile) + " moving to overwrite.")
+                    shutil.move(gameFile, self._paths.rootOverwritePath() / self._paths.gameRelativePath(gameFile))
+                    qDebug("AutoRoot: Moved " + str(gameFile) + " to overwrite.")
+
+            for tempFile in tempData.keys():
+                if not Path(tempFile).exists():
+                    relativePath = self._paths.gameRelativePath(Path(tempFile))
                     backupPath = self._paths.rootBackupPath() / relativePath
                     if backupPath.exists():
-                        qInfo("AutoRoot: Moving " + str(gameFile) + " to overwrite.")
-                        copy2(gameFile, self._paths.rootOverwritePath() / self._paths.gameRelativePath(gameFile))
-                        qInfo("AutoRoot: Moved " + str(gameFile) + " to overwrite.")
-                        qInfo("AutoRoot: Restoring " + str(gameFile) + " from backup.")
-                        copy2(backupPath, gameFile)
-                        qInfo("AutoRoot: Restored " + str(gameFile) + " from backup.")
+                        qDebug("AutoRoot: Backup exists, restoring " + str(tempFile))
+                        copy2(backupPath, Path(tempFile))
+                        qDebug("AutoRoot: Restored " + str(tempFile) + " from backup.")
                     else:
-                        qInfo("AutoRoot: No backup exists for " + str(gameFile))
-            else:
-                qInfo("AutoRoot: New file found " + str(gameFile) + " moving to overwrite.")
-                shutil.move(gameFile, self._paths.rootOverwritePath() / self._paths.gameRelativePath(gameFile))
-                qInfo("AutoRoot: Moved " + str(gameFile) + " to overwrite.")
+                        qWarning("AutoRoot: File missing " + str(tempFile))
+            
+            if backup == False and self._paths.rootBackupPath().exists():
+                qInfo("AutoRoot: Clearing backup files.")
+                shutil.rmtree(self._paths.rootBackupPath())
+                qInfo("AutoRoot: Backup files cleared.")
 
-        for tempFile in tempData.keys():
-            if not Path(tempFile).exists():
-                qInfo("AutoRoot: File missing " + str(tempFile))
-                relativePath = self._paths.gameRelativePath(Path(tempFile))
-                backupPath = self._paths.rootBackupPath() / relativePath
-                if backupPath.exists():
-                    qInfo("AutoRoot: Backup exists, restoring " + str(tempFile))
-                    copy2(backupPath, Path(tempFile))
-                    qInfo("AutoRoot: Restored " + str(tempFile) + " from backup.")
-        
-        if backup == False and self._paths.rootBackupPath().exists():
-            qInfo("AutoRoot: Clearing backup files.")
-            shutil.rmtree(self._paths.rootBackupPath())
-            qInfo("AutoRoot: Backup files cleared.")
-
-        qInfo("AutoRoot: Clearing temp data.")
-        os.remove(self._paths.rootTempPath())
-        qInfo("AutoRoot: Temp data cleared.")
+            qInfo("AutoRoot: Clearing temp data.")
+            os.remove(self._paths.rootTempPath())
+            qInfo("AutoRoot: Temp data cleared.")
+        else:
+            qInfo("AutoRoot: No temp data exists.")
         return
 
     def hashFile(self, path):

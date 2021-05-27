@@ -1,6 +1,7 @@
 import mobase
 from . import autoroot
+from . import autoroottool
 
 # Init
-def createPlugin():
-    return autoroot.AutoRoot()
+def createPlugins():
+    return [autoroot.AutoRoot(), autoroottool.AutoRootCleanupTool(), autoroottool.AutoRootBackupTool(), autoroottool.AutoRootDeleteTool()]

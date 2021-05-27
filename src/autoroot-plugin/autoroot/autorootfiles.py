@@ -29,16 +29,16 @@ class AutoRootFiles():
         qInfo("AutoRoot: Loading game file list.")
         baseFiles = self.getFolderFileList(self._paths.gamePath())
 
-        qInfo("AutoRoot: Excluding invalid files.")
+        qDebug("AutoRoot: Excluding invalid files.")
         validFiles = []
         for file in baseFiles:
             exclude = False
             for exc in self.getExclusionList():
                 if self._paths.sharedPath(self._paths.gamePath() / exc, file):
-                    qInfo("AutoRoot: " + str(file) + " is invalid, excluding.")
+                    qDebug("AutoRoot: " + str(file) + " is invalid, excluding.")
                     exclude = True
             if exclude == False:
-                qInfo("AutoRoot: " + str(file) + " is valid, including.")
+                qDebug("AutoRoot: " + str(file) + " is valid, including.")
                 validFiles.append(file)
         return validFiles
 
@@ -51,9 +51,9 @@ class AutoRootFiles():
             for exc in self.getExclusionList():
                 if (self._paths.modPath() / mod / "Root" / exc).exists():
                     exclude = True
-                    qInfo("AutoRoot: " + str(mod) + " is invalid, excluding.")
+                    qDebug("AutoRoot: " + str(mod) + " is invalid, excluding.")
             if exclude == False:
-                qInfo("AutoRoot: " + str(mod) + " is valid, loading files.")
+                qDebug("AutoRoot: " + str(mod) + " is valid, loading files.")
                 validFiles.extend(self.getFolderFileList(self._paths.modPath() / mod / "Root"))
         return validFiles
 
@@ -67,7 +67,7 @@ class AutoRootFiles():
                 if (str(file).endswith(ext)):
                     exclude = False
             if (exclude == False):
-                qInfo("AutoRoot: Found linkable file " + str(file))
+                qDebug("AutoRoot: Found linkable file " + str(file))
                 relativePath = str(self._paths.rootRelativePath(str(file)))
                 if relativePath in validFiles:
                     validFiles[relativePath] = str(file)
@@ -77,14 +77,14 @@ class AutoRootFiles():
                 
     def getFolderFileList(self, path):
         res = []
-        qInfo("AutoRoot: Searching " + str(path))
+        qDebug("AutoRoot: Searching " + str(path))
         for fp in listdir(path):
             afp = path / fp
             if (Path.is_file(afp)):
-                qInfo("AutoRoot: Found file " + str(afp))
+                qDebug("AutoRoot: Found file " + str(afp))
                 res.append(afp)
             if (Path.is_dir(afp)):
-                qInfo("AutoRoot: Found dir " + str(afp))
+                qDebug("AutoRoot: Found dir " + str(afp))
                 res.extend(self.getFolderFileList(afp))
         return res
 
@@ -93,7 +93,7 @@ class AutoRootFiles():
         modslist = self._org.modList().allModsByProfilePriority()
         rootMods = []
         for mod in modslist:
-            if (self._org.modList().state(mod) and mobase.ModState.active):
+            if (self._org.modList().state(mod) & mobase.ModState.active):
                 if (self._paths.modPath() / mod / "Root").exists():
                     qInfo("AutoRoot: Found root folder in " + mod)
                     exclude = False
