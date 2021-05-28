@@ -17,7 +17,7 @@ class RootBuilderTool(mobase.IPluginTool):
     #endregion
 
     def version(self):
-        return mobase.VersionInfo(0, 0, 1, mobase.ReleaseType.alpha)
+        return mobase.VersionInfo(4, 0, 1, mobase.ReleaseType.alpha)
 
     def isActive(self):
         return self.rootBuilder.settings.enabled()

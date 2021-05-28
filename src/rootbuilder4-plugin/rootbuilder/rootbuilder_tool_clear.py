@@ -16,7 +16,7 @@ class RootBuilderClearTool(RootBuilderTool):
         return "RootBuilder Clear Tool"
 
     def displayName(self):
-        return "RootBuilder/Clear"
+        return "Root Builder/Clear"
 
     def master(self):
         return "RootBuilder"

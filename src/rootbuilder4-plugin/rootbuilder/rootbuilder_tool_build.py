@@ -16,7 +16,7 @@ class RootBuilderBuildTool(RootBuilderTool):
         return "RootBuilder Build Tool"
 
     def displayName(self):
-        return "RootBuilder/Build"
+        return "Root Builder/Build"
 
     def master(self):
         return "RootBuilder"

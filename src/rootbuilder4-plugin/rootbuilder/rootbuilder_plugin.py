@@ -20,7 +20,7 @@ class RootBuilderPlugin(mobase.IPluginFileMapper):
         return "RootBuilder"
 
     def displayname(self):
-        return "RootBuilder"
+        return "Root Builder"
 
     def author(self):
         return "Kezyma"
@@ -29,7 +29,7 @@ class RootBuilderPlugin(mobase.IPluginFileMapper):
         return self.__tr("Allows management of base game files by utilising a Root folder within individual mods.")
     
     def version(self):
-        return mobase.VersionInfo(0, 0, 1, mobase.ReleaseType.alpha) 
+        return mobase.VersionInfo(4, 0, 1, mobase.ReleaseType.alpha) 
 
     def isActive(self):
         return self.rootBuilder.settings.enabled()

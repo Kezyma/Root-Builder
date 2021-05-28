@@ -16,7 +16,7 @@ class RootBuilderSyncTool(RootBuilderTool):
         return "RootBuilder Sync Tool"
 
     def displayName(self):
-        return "RootBuilder/Sync"
+        return "Root Builder/Sync"
 
     def master(self):
         return "RootBuilder"
