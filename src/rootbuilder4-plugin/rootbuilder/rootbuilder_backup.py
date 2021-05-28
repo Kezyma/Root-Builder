@@ -126,7 +126,7 @@ class RootBuilderBackup():
                 fileData.update({str(file):str(self.hashFile(file))})
             # If cache is enabled, save the data to cache.
             if self.settings.cache():
-                if self.paths.rootCacheFilePath().exists():
+                if not self.paths.rootCacheFilePath().exists():
                     self.paths.rootCacheFilePath().touch()
                 with open(self.paths.rootCacheFilePath(), "w") as rcJson:
                     json.dump(fileData, rcJson)
