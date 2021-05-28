@@ -15,6 +15,7 @@ class RootBuilderPlugin(mobase.IPluginFileMapper):
         self.startingRootExe = False
         self.organiser.onAboutToRun(lambda appName: self.build(appName))
         self.organiser.onFinishedRun(lambda appName, resultCode: self.clear(appName, resultCode))
+        return True
 
     def name(self):
         return "RootBuilder"
