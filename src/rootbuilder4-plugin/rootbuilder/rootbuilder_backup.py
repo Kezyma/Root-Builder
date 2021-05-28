@@ -31,6 +31,8 @@ class RootBuilderBackup():
         """ Restores the game to the most vanilla state possible, copying changes to overwrite. """
         # Check if it's possible to restore.
         if self.canRestore():
+            if not self.paths.rootOverwritePath().exists():
+                os.makedirs(self.paths.rootOverwritePath())
             # Get hashes for our current vanilla game install.
             fileData = self.getFileData()
             # Iterate through everything in the current game folder and look for changes.
