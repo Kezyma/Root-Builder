@@ -33,8 +33,7 @@ class RootBuilderCopy():
                 }
             # If this is already in our data, compare them, update if newer.
             if str(relativePath) in fileData:
-                if fileData[str(relativePath)]["Path"] != modFileData["Path"]:
-                #if fileData[str(relativePath)]["Hash"] != modFileData["Hash"]:
+                if fileData[str(relativePath)]["Hash"] != modFileData["Hash"]:
                     fileData[str(relativePath)] = modFileData
             # If the file is not in the existing data, add it.
             else:
@@ -60,11 +59,10 @@ class RootBuilderCopy():
                 fileHash = fileData[relativePath]["Hash"]
                 gamePath = self.paths.gamePath() / relativePath
                 if gamePath.exists():
-                    copy2(gamePath, modPath)
-                    #gameHash = self.backup.hashFile(gamePath)
+                    gameHash = self.backup.hashFile(gamePath)
                     # If the file hash has changed, copy the file back to its original path.
-                    #if str(gameHash) != str(fileHash):
-                    #    copy2(gamePath, modPath)
+                    if str(gameHash) != str(fileHash):
+                        copy2(gamePath, modPath)
         return
 
     def clear(self):

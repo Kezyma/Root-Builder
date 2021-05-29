@@ -26,6 +26,9 @@ class RootBuilderFiles():
             for ex in self.settings.exclusions():
                 if self.paths.sharedPath(self.paths.gamePath() / ex, file):
                     exclude = True
+            # Check if the file is part of the game data.
+            if self.paths.sharedPath(self.paths.gamePath() / self.paths.gameDataDir(), file):
+                exclude = True
             if exclude == False:
                 validFiles.append(file)
         return validFiles
@@ -45,6 +48,9 @@ class RootBuilderFiles():
                     for ex in self.settings.exclusions():
                         if (self.paths.modsPath() / mod / "Root" / ex).exists():
                             exclude = True
+                    # Check if the file is part of the game data.
+                    if (self.paths.modsPath() / mod / "Root" / self.paths.gameDataDir()).exists():
+                        exclude = True
                     if exclude == False:
                         rootmods.append(mod)
         return rootmods
