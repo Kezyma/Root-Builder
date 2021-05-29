@@ -60,6 +60,12 @@ class RootBuilderBackup():
                     # If the file has been deleted and has a backup, restore it.
                     if backupPath.exists():
                         copy2(backupPath, file)
+        # Clean up any empty game folders.
+        gameFolders = self.files.getGameFolderList()
+        for folder in gameFolders:
+            if folder.exists():
+                if len(os.listdir(folder)) == 0:
+                    os.rmdir(folder)
         # If backup is disabled, we can clear any backed up files now that the restore is complete.
         if self.settings.backup() == False:
             self.clearBackupFiles()

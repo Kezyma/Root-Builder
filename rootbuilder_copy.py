@@ -43,6 +43,8 @@ class RootBuilderCopy():
             sourcePath = Path(fileData[relativePath]["Path"])
             destPath = self.paths.gamePath() / relativePath
             if sourcePath.exists():
+                if not destPath.parent.exists():
+                    os.makedirs(destPath)
                 copy2(sourcePath, destPath)
         # Save data
         self.saveModData(fileData)

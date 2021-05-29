@@ -33,6 +33,24 @@ class RootBuilderFiles():
                 validFiles.append(file)
         return validFiles
 
+    def getGameFolderList(self):
+        """ Gets a list of all folders in the current game folder. """
+        gameFolders = self.getSubFolderList(self.paths.gamePath())
+        validFolders = []
+        # Loop through folder and look for invalid ones.
+        for folder in gameFolders:
+            exclude = False
+            # Check if the folder is, or is in, an exclusion.
+            for ex in self.settings.exclusions():
+                if self.paths.sharedPath(self.paths.gamePath() / ex, folder):
+                    exclude = True
+            # Check if the folder is part of the game data.
+            if self.paths.sharedPath(self.paths.gamePath() / self.paths.gameDataDir(), folder):
+                exclude = True
+            if exclude == False:
+                validFolders.append(folder)
+        return validFolders
+
     def getRootMods(self):
         """ Gets a list of all active mods with valid root files. """
         # Get a list of all current mods, in order.
@@ -48,7 +66,7 @@ class RootBuilderFiles():
                     for ex in self.settings.exclusions():
                         if (self.paths.modsPath() / mod / "Root" / ex).exists():
                             exclude = True
-                    # Check if the file is part of the game data.
+                    # Check if the file is part of the game data folder.
                     if (self.paths.modsPath() / mod / "Root" / self.paths.gameDataDir()).exists():
                         exclude = True
                     if exclude == False:
@@ -108,4 +126,16 @@ class RootBuilderFiles():
             # If the content is a folder, load the contents.
             if (Path.is_dir(afp)):
                 res.extend(self.getFolderFileList(afp))
+        return res
+
+    def getSubFolderList(self, path):
+        """ Lists all folders in a folder, including all subfolders """
+        res = []   
+        # Grab the full contents of the folder.
+        for fp in listdir(path):
+            afp = path / fp
+            # If the content is a folder, add it and load subfolders.
+            if (Path.is_dir(afp)):
+                res.append(afp)
+                res.extend(self.getSubFolderList(afp))
         return res
