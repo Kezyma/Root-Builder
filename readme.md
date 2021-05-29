@@ -4,9 +4,9 @@
 ### Introduction
 Root Builder allows you to manage mod files that go inside the base game folder instead of the Data (or Data Files for Morrowind) folder. It provides functions that allow you to copy mod files to the game folder, synchronise them with the files in Mod Organizer and to clean up and restore the original game folder. It also provides the ability to fully automate this process on each launch.
 
-
 ### Installation
 If you currently have any version of RootBuilder prior to 4.0.*, run a full clear operation and delete all files associated with RootBuilder before installing this version. They are incompatible and may cause problems if present.
+
 Copy the rootbuilder folder to Mod Organizer's plugins folder. If Mod Organizer is installed at `D:\MO\`, the plugins folder will be located at `D:\MO\plugins\`
 
 ### Mod Setup
@@ -30,6 +30,7 @@ Where the esp file and the Meshes and Textures will be picked up by Mod Organize
 
 ### Usage
 A new item will appear in the tools menu of Mod Organizer with the three main functions of RootBuilder, build, sync and clear.
+
 RootBuilder will, by default, run a build whenever you run an application through Mod Organizer and a clear when the application closes, this can be disabled in settings.
 
 #### Build
@@ -41,10 +42,12 @@ When a build runs, the following happpens;
 
 #### Sync
 Sync only has an effect if usvfs mode is disabled.
+
 When a sync runs, the following happens;
 - Any copied mod files that have changed will be copied back to the mod folder.
 - Any base game files that have changed will be copied to the overwrite folder.
 - Any new files will be copied to the overwrite folder.
+
 Please note, if you run a sync that copies files to overwrite and then you move them to a mod, you must run build again or RootBuilder will think they are still in the overwrite folder and may copy them back there on the next sync or clear.
 
 #### Clear
@@ -61,11 +64,14 @@ Determines whether the RootBuilder plugin is enabled in Mod Organizer.
 
 #### cache (default: true)
 If enabled, on the first build being run, the hashes of the game folder will be cached. This is ideal if you have a fresh game installation or are confident that you do not plan on changing files in the game folder manually.
+
 If disabled, if any cache already exists for the current game, it will be cleared on the next build.
 
 #### backup (default: true)
 If enabled, on the first build being run, the contents of the game folder will be backed up. This is ideal if you have a fresh game installation or are confident that you do not plan on changing files in the game folder manually.
+
 If disabled, RootBuilder will try to identify any conflicts between your installed mods and the game folder and back only those conflicts up.
+
 If disabled, any existing backup will be deleted on the next clear.
 
 #### autobuild (default: true)
@@ -76,11 +82,14 @@ If enabled, when running an application through Mod Organizer, if that applicati
 
 #### usvfsmode (default: false)
 If enabled, instead of copying files to and from the game folder, RootBuilder will utilise Mod Organizer's usvfs to handle root files. 
+
 Please note, this does not work with all games and mod combinations.
 
 #### linkmode (default: false)
 Requires usvfsmode to be enabled.
+
 If enabled, on top of using usvfs, RootBuilder will create links in the game folder pointing to specific mod root files. This can improve the compatibility of usvfs mode.
+
 Please note, this does not work with all games and mod combinations.
 
 #### linkextensions (default: "exe,dll")
@@ -88,4 +97,5 @@ A comma separated list of file extensions that are valid for linking if linkmode
 
 #### exclusions (default: "Saves,Morrowind.ini")
 A comma separated list of files and folders in the base game folder that will be ignored by RootBuilder.
+
 Any mods that contain these files and folders will be ignored and skipped during build.
