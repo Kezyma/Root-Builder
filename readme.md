@@ -13,6 +13,7 @@ Copy the rootbuilder folder to Mod Organizer's plugins folder. If Mod Organizer 
 When packaging mods for Mod Organizer, you must move any files intended to go into the base game folder into a new folder called Root that sits alongside other Data folders such as Meshes or Textures. 
 
 For example, if your original mod is packaged like this;
+	
 	SomeModDll.dll
 	SomeModExe.exe
 	Data\SomeModEsp.esp
@@ -20,6 +21,7 @@ For example, if your original mod is packaged like this;
 	Data\Meshes\VeryPrettyModel.nif
 
 You would need to rearrange it for Mod Organizer as follows;
+	
 	Root\SomeModDll.dll
 	Root\SomeModExe.exe
 	SomeModEsp.esp
