@@ -59,33 +59,33 @@ When a clear runs, the following happens;
 #### enabled (default: true)
 Determines whether the RootBuilder plugin is enabled in Mod Organizer.
 
-### cache (default: true)
+#### cache (default: true)
 If enabled, on the first build being run, the hashes of the game folder will be cached. This is ideal if you have a fresh game installation or are confident that you do not plan on changing files in the game folder manually.
 If disabled, if any cache already exists for the current game, it will be cleared on the next build.
 
-### backup (default: true)
+#### backup (default: true)
 If enabled, on the first build being run, the contents of the game folder will be backed up. This is ideal if you have a fresh game installation or are confident that you do not plan on changing files in the game folder manually.
 If disabled, RootBuilder will try to identify any conflicts between your installed mods and the game folder and back only those conflicts up.
 If disabled, any existing backup will be deleted on the next clear.
 
-### autobuild (default: true)
+#### autobuild (default: true)
 If enabled, whenever you run an application through Mod Organizer, a build will be run before the application and a clear will be run when the application closes.
 
-### redirect (default: true)
+#### redirect (default: true)
 If enabled, when running an application through Mod Organizer, if that application is in a root folder within a mod and also exists in the game folder, it will redirect the application to launch from the game folder instead.
 
-### usvfsmode (default: false)
+#### usvfsmode (default: false)
 If enabled, instead of copying files to and from the game folder, RootBuilder will utilise Mod Organizer's usvfs to handle root files. 
 Please note, this does not work with all games and mod combinations.
 
-### linkmode (default: false)
+#### linkmode (default: false)
 Requires usvfsmode to be enabled.
 If enabled, on top of using usvfs, RootBuilder will create links in the game folder pointing to specific mod root files. This can improve the compatibility of usvfs mode.
 Please note, this does not work with all games and mod combinations.
 
-### linkextensions (default: "exe,dll")
+#### linkextensions (default: "exe,dll")
 A comma separated list of file extensions that are valid for linking if linkmode is enabled.
 
-### exclusions (default: "Saves,Morrowind.ini")
+#### exclusions (default: "Saves,Morrowind.ini")
 A comma separated list of files and folders in the base game folder that will be ignored by RootBuilder.
 Any mods that contain these files and folders will be ignored and skipped during build.
