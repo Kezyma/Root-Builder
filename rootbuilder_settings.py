@@ -46,4 +46,4 @@ class RootBuilderSettings():
     def redirect(self):
         """ Whether to redirect apps launched from mod root folders. """
         return self.organiser.pluginSetting("RootBuilder", "redirect")
-    
+
