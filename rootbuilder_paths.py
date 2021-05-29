@@ -50,37 +50,46 @@ class RootBuilderPaths():
     def rootBackupPath(self):
         """ Gets the path to the backup folder for the current game. """
         if self._rootBackupPath == str():
-            self._rootBackupPath = self.pluginDataPath() / self.safeGamePathName() / "backup"
+            self._rootBackupPath = self.rootBuilderGameDataPath() / "backup"
         if not Path(self._rootBackupPath).exists():
             os.makedirs(self._rootBackupPath)
         return Path(self._rootBackupPath)
+
+    _rootBuilderGameDataPath = str()
+    def rootBuilderGameDataPath(self):
+        """ Gets the path to the RootBuilder data folder for the current game. """
+        if self._rootBuilderGameDataPath == str():
+            self._rootBuilderGameDataPath = self.pluginDataPath() / self.safeGamePathName()
+        if not Path(self._rootBuilderGameDataPath).exists():
+            os.makedirs(self._rootBuilderGameDataPath)
+        return Path(self._rootBuilderGameDataPath)
 
     _rootCacheFilePath = str()
     def rootCacheFilePath(self):
         """ Gets the path to the cache file for the current game. """
         if self._rootCacheFilePath == str():
-            self._rootCacheFilePath = self.pluginDataPath() / self.safeGamePathName() / Path("RootBuilderCacheData.json")
+            self._rootCacheFilePath = self.rootBuilderGameDataPath() / Path("RootBuilderCacheData.json")
         return Path(self._rootCacheFilePath)
 
     _rootBackupDataFilePath = str()
     def rootBackupDataFilePath(self):
         """ Gets the path to the current backup data file. """
         if self._rootBackupDataFilePath == str():
-            self._rootBackupDataFilePath = self.pluginDataPath() / self.safeGamePathName() / Path("RootBuilderBackupData.json")
+            self._rootBackupDataFilePath = self.rootBuilderGameDataPath() / Path("RootBuilderBackupData.json")
         return Path(self._rootBackupDataFilePath)
 
     _rootModDataFilePath = str()
     def rootModDataFilePath(self):
         """ Gets the path to the current mod data file. """
         if self._rootModDataFilePath == str():
-            self._rootModDataFilePath = self.pluginDataPath() / self.safeGamePathName() / Path("RootBuilderModData.json")
+            self._rootModDataFilePath = self.rootBuilderGameDataPath() / Path("RootBuilderModData.json")
         return Path(self._rootModDataFilePath)
 
     _rootLinkDataFilePath = str()
     def rootLinkDataFilePath(self):
         """ Gets the path to the current link data file. """
         if self._rootLinkDataFilePath == str():
-            self._rootLinkDataFilePath = self.pluginDataPath() / self.safeGamePathName() / Path("RootBuilderLinkData.json")
+            self._rootLinkDataFilePath = self.rootBuilderGameDataPath() / Path("RootBuilderLinkData.json")
         return Path(self._rootLinkDataFilePath)
 
     _safeGamePathName = str()
