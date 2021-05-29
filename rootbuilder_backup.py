@@ -82,7 +82,7 @@ class RootBuilderBackup():
             relativePath = self.paths.gameRelativePath(file)
             backupPath = self.paths.rootBackupPath() / relativePath
             # Back them up if they don't already exist.
-            if not backupPath.exists():
+            if not backupPath.exists() and file.exists():
                 if not os.path.exists(os.path.dirname(backupPath)):
                     os.makedirs(os.path.dirname(backupPath))
                 copy2(str(file), str(backupPath))
