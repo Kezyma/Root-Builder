@@ -55,16 +55,35 @@ class RootBuilderCopy():
         # Only run if there's already data.
         if self.hasModData():
             # Get existing data
-            fileData = self.getModData()
-            for relativePath in fileData.keys():
-                modPath = fileData[relativePath]["Path"]
-                fileHash = fileData[relativePath]["Hash"]
-                gamePath = self.paths.gamePath() / relativePath
-                if gamePath.exists():
-                    gameHash = self.backup.hashFile(gamePath)
-                    # If the file hash has changed, copy the file back to its original path.
-                    if str(gameHash) != str(fileHash):
-                        copy2(gamePath, modPath)
+            modData = self.getModData()
+            backupData = self.backup.getFileData()
+            gameFiles = self.files.getGameFileList()
+            for file in gameFiles:
+                relativePath = self.paths.gameRelativePath(file)
+                if str(relativePath) in modData:
+                    # This is a mod file, check if it has changed and copy it back if it has.
+                    fileHash = str(self.backup.hashFile(file))
+                    if  fileHash != modData[str(relativePath)]["Hash"]:
+                        copy2(file, modData[str(relativePath)]["Path"])
+                        modData[str(relativePath)]["Hash"] = fileHash
+                elif str(file) in backupData:
+                    # This is a vanilla game file, check if it has changed and copy to overwrite and add to modData if it has.
+                    fileHash = str(self.backup.hashFile(file))
+                    if  fileHash != backupData[str(file)]:
+                        overwritePath = self.paths.rootOverwritePath / relativePath
+                        if not overwritePath.parent.exists():
+                            os.makedirs(overwritePath.parent)
+                        copy2(file, overwritePath)
+                        modData[str(relativePath)] = { "Path" : overwritePath, "Hash" : fileHash }
+                else:
+                    # This is a new file, copy it to overwrite and add to modData.
+                    overwritePath = self.paths.rootOverwritePath / relativePath
+                    if not overwritePath.parent.exists():
+                        os.makedirs(overwritePath.parent)
+                    copy2(file, overwritePath)
+                    modData.update({ str(relativePath) : { "Path" : overwritePath, "Hash" : fileHash } })
+            # Save mod data.
+            self.saveModData(modData)
         return
 
     def clear(self):
