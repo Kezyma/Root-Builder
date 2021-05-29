@@ -64,24 +64,27 @@ class RootBuilderCopy():
                     # This is a mod file, check if it has changed and copy it back if it has.
                     fileHash = str(self.backup.hashFile(file))
                     if  fileHash != modData[str(relativePath)]["Hash"]:
-                        copy2(file, modData[str(relativePath)]["Path"])
+                        destPath = Path(modData[str(relativePath)]["Path"])
+                        if not destPath.parent.exists():
+                            os.makedirs(destPath.parent)
+                        copy2(file, destPath)
                         modData[str(relativePath)]["Hash"] = fileHash
                 elif str(file) in backupData:
                     # This is a vanilla game file, check if it has changed and copy to overwrite and add to modData if it has.
                     fileHash = str(self.backup.hashFile(file))
                     if  fileHash != backupData[str(file)]:
-                        overwritePath = self.paths.rootOverwritePath / relativePath
+                        overwritePath = self.paths.rootOverwritePath() / relativePath
                         if not overwritePath.parent.exists():
                             os.makedirs(overwritePath.parent)
                         copy2(file, overwritePath)
-                        modData[str(relativePath)] = { "Path" : overwritePath, "Hash" : fileHash }
+                        modData[str(relativePath)] = { "Path" : str(overwritePath), "Hash" : fileHash }
                 else:
                     # This is a new file, copy it to overwrite and add to modData.
-                    overwritePath = self.paths.rootOverwritePath / relativePath
+                    overwritePath = self.paths.rootOverwritePath() / relativePath
                     if not overwritePath.parent.exists():
                         os.makedirs(overwritePath.parent)
                     copy2(file, overwritePath)
-                    modData.update({ str(relativePath) : { "Path" : overwritePath, "Hash" : fileHash } })
+                    modData.update({ str(relativePath) : { "Path" : str(overwritePath), "Hash" : fileHash } })
             # Save mod data.
             self.saveModData(modData)
         return
