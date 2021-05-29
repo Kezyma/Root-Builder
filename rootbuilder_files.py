@@ -81,13 +81,10 @@ class RootBuilderFiles():
         linkableFiles = []
         # Loop through the files in each mod and look for linkable extensions.
         for file in modFiles:
-            qInfo("Checking " + str(file))
             exclude = True
             # Loop through the linkable extensions and look for a match.
             for ex in self.settings.linkextensions():
-                qInfo("Checking for ext " + ex)
                 if (str(file)).endswith("." + ex):
-                    qInfo("Valid File")
                     exclude = False
             if exclude == False:
                 linkableFiles.append(file)

@@ -4,7 +4,7 @@ from pathlib import Path
 from .rootbuilder_settings import RootBuilderSettings
 from .rootbuilder_paths import RootBuilderPaths
 from .rootbuilder_files import RootBuilderFiles
-import mobase, os, hashlib, json, shutil
+import mobase, os, hashlib, json, shutil, _md5
 
 class RootBuilderBackup():
     """ Root Builder backup module. Used to back up and restore vanilla game installations. """
@@ -108,7 +108,7 @@ class RootBuilderBackup():
                 gamePath = self.paths.gamePath() / relativePath
                 # If we have data, we need to back this file up.
                 if str(gamePath) in fileData:
-                    backupFiles.append(file)
+                    backupFiles.append(gamePath)
         return backupFiles
 
     def getFileData(self):

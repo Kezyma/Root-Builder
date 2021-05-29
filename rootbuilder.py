@@ -24,25 +24,49 @@ class RootBuilder():
         return QCoreApplication.translate("RootBuilder", trstr)
 
     def build(self):
+        qInfo("RootBuilder: Starting build.")
+
+        qInfo("RootBuilder: Backing up files.")
         self.backup.backup()
+        qInfo("RootBuilder: Backed up files.")
         if self.settings.usvfsmode():
             if self.settings.linkmode():
+                qInfo("RootBuilder: Generating links.")
                 self.linker.build()
-                return
-            return
+                qInfo("RootBuilder: Links generated.")
         else:
+            qInfo("RootBuilder: Copying files.")
             self.copier.build()
-            return
+            qInfo("RootBuilder: Files copied.")
+
+        qInfo("RootBuilder: Build complete.")
 
     def sync(self):
+        qInfo("RootBuilder: Starting sync.")
         self.copier.sync()
+        qInfo("RootBuilder: Sync complete.")
         return
 
     def clear(self):
+        qInfo("RootBuilder: Starting clear.")
+
+        qInfo("RootBuilder: Clearing any links.")
         self.linker.clear()
+        qInfo("RootBuilder: Links cleared.")
+
+        qInfo("RootBuilder: Clearing any copied files.")
         self.copier.clear()
+        qInfo("RootBuilder: Copied files cleared.")
+
+        qInfo("RootBuilder: Restoring game files.")
         self.backup.restore()
+        qInfo("RootBuilder: Game files restored.")
+        
+        qInfo("RootBuilder: Cleaning up overwrite.")
         self.mapper.cleanup()
+        qInfo("RootBuilder: Overwrite cleaned.")
+
+        qInfo("RootBuilder: Clear complete.")
 
     def mappings(self):
         return self.mapper.mappings()
