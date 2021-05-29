@@ -26,6 +26,9 @@ class RootBuilderLinker():
             # If the linkable file is already in the game folder, rename it.
             if gamePath.exists():
                 shutil.move(gamePath, Path(str(gamePath) + ".rbackup"))
+            # Create the dirs if they don't exist.
+            if not gamePath.parent.exists():
+                    os.makedirs(gamePath)
             # Try and create a link. This will fail if a link is already there.
             Path(file).link_to(gamePath)
         # Save our link data.
