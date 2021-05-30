@@ -64,10 +64,10 @@ class RootBuilderBackup():
         gameFolders = self.files.getGameFolderList()
         for folder in gameFolders:
             if folder.exists():
-                if len(os.listdir(folder)) == 0:
-                    os.rmdir(folder)
+                if len(self.files.getFolderFileList(folder)) == 0:
+                    shutil.rmtree(folder)
         # If backup is disabled, we can clear any backed up files now that the restore is complete.
-        if self.settings.backup() == False:
+        if self.settings.backup() is False:
             self.clearBackupFiles()
         # Delete current backup data.
         self.clearFileData()
