@@ -33,31 +33,43 @@ Where the esp file and the Meshes and Textures will be picked up by Mod Organize
 ### Usage
 A new item will appear in the tools menu of Mod Organizer with the three main functions of RootBuilder, build, sync and clear.
 
-RootBuilder will, by default, run a build whenever you run an application through Mod Organizer and a clear when the application closes, this can be disabled in settings.
+RootBuilder will, by default, run a build whenever you run an application through Mod Organizer and a clear when the application closes, this can be turned off in settings by disabling autobuild(default=true).
+
+Ideally, you want to have the game folder as unmodified as possible during the first build if backup(default=true) and/or cache(default=true) is enabled. This enables RootBuilder to correctly restore a vanilla game on each clear as well as more accurately track every change made to the game. If you wish to change the game files in the cache and/or backup, disable the setting, run a build and then run a clear. Then re-enable the setting. On the next build, a fresh backup and/or cache will be taken.
 
 #### Build
 When a build runs, the following happpens;
-- The game folder will be hashed and the results recorded. If data already exists, it will be loaded.
-- If backup is enabled, a full backup of the game folder will be taken, otherwise, only conflicts between mod and game files will be backed up.
-- If usvfs mode and link mode are enabled, links will be created in the game folder for all linkable files and a list of these will be recorded.
-- If usvfs mode is not enabled, all root mod files will be copied to the game folder and recorded.
+- The current game folder is hashed and the data recorded.
+	- If data from a previous build exists, it will be loaded instead.
+	- If cache data exists and previous build data does not, it will be loaded instead.
+- If cache(default=true) is enabled , the data will be saved as a cache for all future runs.
+	- If not, any existing cache file is deleted.
+- If backup(default=true) is enabled , any base game files that are not currently backed up, will be.
+	- If backup isn't enabled, any any game files that conflict with mod files in root folders will be backed up.
+- If usvfsmode(default=false) and linkmode(default=false) are enabled , any valid files will be linked to the game folder and the list recorded.
+- Otherwise, all mod files in the root folder are copied to the game folder.
 
 #### Sync
-Sync only has an effect if usvfs mode is disabled.
+Sync only has an effect if usvfs mode is disabled and a build has been run.
 
 When a sync runs, the following happens;
-- Any copied mod files that have changed will be copied back to the mod folder.
-- Any base game files that have changed will be copied to the overwrite folder.
-- Any new files will be copied to the overwrite folder.
+- Data from the last build is loaded.
+- Each file in the game folder is checked.
+	- If it came from a mod, it's compared with the original file and will overwrite it if changed.
+	- If it came from the base game, it's compared with the original file and the file will be copied to Mod Organizer's overwrite folder if it has changed.
+	- If it's a new file, it will be copied to Mod Organizer's overwrite folder.
+- Data for the current build is updated to include references to any files that were copied to the overwrite folder and any changed hashes are updated.
 
 Please note, if you run a sync that copies files to overwrite and then you move them to a mod, you must run build again or RootBuilder will think they are still in the overwrite folder and may copy them back there on the next sync or clear.
 
 #### Clear
 When a clear runs, the following happens;
-- A sync is run.
-- If any files have been linked, they will be unlinked.
-- If any files have been copied, they will be deleted.
-- If any base game files have changed and also have a backup, the original backup will be restored.
+- A Sync operation is run, to make sure any changes to the game files are not lost.
+- If any files have been linked while linkmode(default=false) is enabled, the links in the game folder will be removed.
+- Any files that have been copied across to the game folder will be deleted.
+- Any base game files that have changed and also have a backup will be restored from the backup.
+- If backup(default=true) is disabled, any backed up files will be deleted.
+- Data for the last build is deleted.
 
 ### Settings
 
@@ -83,16 +95,18 @@ If enabled, whenever you run an application through Mod Organizer, a build will 
 If enabled, when running an application through Mod Organizer, if that application is in a root folder within a mod and also exists in the game folder, it will redirect the application to launch from the game folder instead.
 
 #### usvfsmode (default: false)
-If enabled, instead of copying files to and from the game folder, RootBuilder will utilise Mod Organizer's usvfs to handle root files. 
+Requires autobuild to be enabled.
 
-Please note, this does not work with all games and mod combinations.
+If enabled, instead of copying files to and from the game folder, RootBuilder will utilise Mod Organizer's usvfs to handle root files. This will only work with autobuild since it is handled when you launch an application through Mod Organizer. Do not attempt to manually build, sync or clear when using this mode. Make sure to run a clear before enabling/disabling this setting or unintentional results may occur.
+
+Please note, this does not work with all game and mod combinations.
 
 #### linkmode (default: false)
 Requires usvfsmode to be enabled.
 
 If enabled, on top of using usvfs, RootBuilder will create links in the game folder pointing to specific mod root files. This can improve the compatibility of usvfs mode.
 
-Please note, this does not work with all games and mod combinations.
+Please note, this does not work with all game and mod combinations.
 
 #### linkextensions (default: "exe,dll")
 A comma separated list of file extensions that are valid for linking if linkmode is enabled.
