@@ -13,17 +13,11 @@ class RootBuilderSyncTool(RootBuilderTool):
         return True
 
     def name(self):
-        return "RootBuilder Sync Tool"
+        return self.baseName() + " Sync Tool"
 
     def displayName(self):
-        return "Root Builder/Sync"
+        return self.baseDisplayName() + "/Sync"
 
-    def master(self):
-        return "RootBuilder"
-    
-    def author(self):
-        return "Kezyma"
-    
     def description(self):
         return self.tooltip()
 

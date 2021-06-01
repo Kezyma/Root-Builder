@@ -13,17 +13,11 @@ class RootBuilderBuildTool(RootBuilderTool):
         return True
 
     def name(self):
-        return "RootBuilder Build Tool"
+        return self.baseName() + " Build Tool"
 
     def displayName(self):
-        return "Root Builder/Build"
+        return self.baseDisplayName() + "/Build"
 
-    def master(self):
-        return "RootBuilder"
-    
-    def author(self):
-        return "Kezyma"
-    
     def description(self):
         return self.tooltip()
 

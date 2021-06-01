@@ -1,10 +1,10 @@
-from PyQt5.QtCore import QCoreApplication
 from shutil import copy2
 from pathlib import Path
 from .rootbuilder_settings import RootBuilderSettings
 from .rootbuilder_paths import RootBuilderPaths
 from .rootbuilder_files import RootBuilderFiles
-import mobase, os, hashlib, json, shutil, _md5
+import mobase, os, hashlib, json, shutil
+
 
 class RootBuilderBackup():
     """ Root Builder backup module. Used to back up and restore vanilla game installations. """

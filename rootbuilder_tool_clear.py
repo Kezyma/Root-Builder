@@ -13,16 +13,10 @@ class RootBuilderClearTool(RootBuilderTool):
         return True
 
     def name(self):
-        return "RootBuilder Clear Tool"
+        return self.baseName() + " Clear Tool"
 
     def displayName(self):
-        return "Root Builder/Clear"
-
-    def master(self):
-        return "RootBuilder"
-    
-    def author(self):
-        return "Kezyma"
+        return self.baseDisplayName() + "/Clear"
     
     def description(self):
         return self.tooltip()
