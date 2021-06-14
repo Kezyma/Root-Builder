@@ -112,7 +112,10 @@ class RootBuilderPaths():
         return "_".join(os.path.normpath(path).split(os.path.sep)).replace(":", "").replace(" ", "_")
 
     def sharedPath(self, basePath, childPath):
-        """ Determines whether one path is a child of another path. """       
-        if os.path.commonpath([os.path.abspath(basePath), os.path.abspath(childPath)]) == os.path.commonpath([os.path.abspath(basePath)]):
-            return True
+        """ Determines whether one path is a child of another path. """
+        try:
+            if os.path.commonpath([os.path.abspath(basePath), os.path.abspath(childPath)]) == os.path.commonpath([os.path.abspath(basePath)]):
+                return True
+        except:
+            return False
         return False

@@ -4,6 +4,7 @@ from pathlib import Path
 from .rootbuilder_settings import RootBuilderSettings
 from .rootbuilder_paths import RootBuilderPaths
 from .rootbuilder_files import RootBuilderFiles
+from .rootbuilder_backup import RootBuilderBackup
 import mobase, os, hashlib, json, shutil
 
 class RootBuilderLinker():
@@ -14,6 +15,7 @@ class RootBuilderLinker():
         self.settings = RootBuilderSettings(self.organiser)
         self.paths = RootBuilderPaths(self.organiser)
         self.files = RootBuilderFiles(self.organiser)
+        self.backup = RootBuilderBackup(self.organiser)
         super(RootBuilderLinker, self).__init__()
 
     def build(self):
@@ -25,7 +27,8 @@ class RootBuilderLinker():
             gamePath = self.paths.gamePath() / relativePath
             # If the linkable file is already in the game folder, rename it.
             if gamePath.exists():
-                shutil.move(gamePath, Path(str(gamePath) + ".rbackup"))
+                self.backup.copyTo(gamePath, Path(str(gamePath) + ".rbackup"))
+                #shutil.move(gamePath, Path(str(gamePath) + ".rbackup"))
             # Create the dirs if they don't exist.
             if not gamePath.parent.exists():
                     os.makedirs(gamePath.parent)
@@ -49,6 +52,8 @@ class RootBuilderLinker():
                 if gamePath.exists():
                     gamePath.unlink(True)
                 if Path(str(gamePath) + ".rbackup").exists():
-                    shutil.move(Path(str(gamePath) + ".rbackup"), gamePath)
+                    self.backup.moveTo(Path(str(gamePath) + ".rbackup"), gamePath)
+                    #shutil.move(Path(str(gamePath) + ".rbackup"), gamePath)
             # Remove our link data file.
-            os.remove(self.paths.rootLinkDataFilePath())
+            self.backup.deletePath(self.paths.rootLinkDataFilePath())
+            #os.remove(self.paths.rootLinkDataFilePath())

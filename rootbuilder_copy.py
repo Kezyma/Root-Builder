@@ -5,7 +5,7 @@ from .rootbuilder_settings import RootBuilderSettings
 from .rootbuilder_paths import RootBuilderPaths
 from .rootbuilder_files import RootBuilderFiles
 from .rootbuilder_backup import RootBuilderBackup
-import mobase, os, hashlib, json, shutil
+import mobase, os, hashlib, json, shutil, stat
 
 class RootBuilderCopy():
     """ Root Builder copy module. Used to copy files to and from mod folders. """
@@ -45,7 +45,8 @@ class RootBuilderCopy():
             if sourcePath.exists():
                 if not destPath.parent.exists():
                     os.makedirs(destPath.parent)
-                copy2(sourcePath, destPath)
+                #copy2(sourcePath, destPath)
+                self.backup.copyTo(sourcePath, destPath)
         # Save data
         self.saveModData(fileData)
         return
@@ -67,7 +68,8 @@ class RootBuilderCopy():
                         destPath = Path(modData[str(relativePath)]["Path"])
                         if not destPath.parent.exists():
                             os.makedirs(destPath.parent)
-                        copy2(file, destPath)
+                        #copy2(file, destPath)
+                        self.backup.copyTo(file, destPath)
                         modData[str(relativePath)]["Hash"] = fileHash
                 elif str(file) in backupData:
                     # This is a vanilla game file, check if it has changed and copy to overwrite and add to modData if it has.
@@ -76,14 +78,16 @@ class RootBuilderCopy():
                         overwritePath = self.paths.rootOverwritePath() / relativePath
                         if not overwritePath.parent.exists():
                             os.makedirs(overwritePath.parent)
-                        copy2(file, overwritePath)
+                        #copy2(file, overwritePath)
+                        self.backup.copyTo(file, overwritePath)
                         modData[str(relativePath)] = { "Path" : str(overwritePath), "Hash" : fileHash }
                 else:
                     # This is a new file, copy it to overwrite and add to modData.
                     overwritePath = self.paths.rootOverwritePath() / relativePath
                     if not overwritePath.parent.exists():
                         os.makedirs(overwritePath.parent)
-                    copy2(file, overwritePath)
+                    self.backup.copyTo(file, overwritePath)
+                    #copy2(file, overwritePath)
                     modData.update({str(relativePath): {"Path": str(overwritePath), "Hash": self.backup.hashFile(file)}})
             # Save mod data.
             self.saveModData(modData)
@@ -101,7 +105,8 @@ class RootBuilderCopy():
                 gamePath = self.paths.gamePath() / relativePath
                 # If the file exists in the game, delete it.
                 if gamePath.exists():
-                    os.remove(gamePath)
+                    self.backup.deletePath(gamePath)
+                    #os.remove(gamePath)
             # Clear the existing mod data
             self.clearModData()
         return
@@ -129,4 +134,7 @@ class RootBuilderCopy():
     def clearModData(self):
         """ Removes any existing mod data. """
         if self.paths.rootModDataFilePath().exists():
-            os.remove(self.paths.rootModDataFilePath())
+            self.backup.deletePath(self.paths.rootModDataFilePath())
+            #os.remove(self.paths.rootModDataFilePath())
+
+    

@@ -3,7 +3,7 @@ from pathlib import Path
 from .rootbuilder_settings import RootBuilderSettings
 from .rootbuilder_paths import RootBuilderPaths
 from .rootbuilder_files import RootBuilderFiles
-import mobase, os, hashlib, json, shutil
+import mobase, os, hashlib, json, shutil, stat
 
 
 class RootBuilderBackup():
@@ -91,7 +91,8 @@ class RootBuilderBackup():
             if not backupPath.exists() and Path(file).exists():
                 if not os.path.exists(os.path.dirname(backupPath)):
                     os.makedirs(os.path.dirname(backupPath))
-                copy2(str(file), str(backupPath))
+                self.copyTo(str(file), str(backupPath))
+                #copy2(str(file), str(backupPath))
 
     def getBackupList(self, fileData=dict):
         """ Gets a list of files that should be backed up. """
@@ -139,7 +140,8 @@ class RootBuilderBackup():
             # Otherwise, clear any cache if it exists.
             else:
                 if self.paths.rootCacheFilePath().exists():    
-                    os.remove(self.paths.rootCacheFilePath())
+                    self.deletePath(self.paths.rootCacheFilePath())
+                    #os.remove(self.paths.rootCacheFilePath())
         return fileData
 
     def saveFileData(self, fileData=dict):
@@ -152,7 +154,8 @@ class RootBuilderBackup():
     def clearFileData(self):
         """ Clears the current backup data file """
         if self.paths.rootBackupDataFilePath().exists():
-            os.remove(self.paths.rootBackupDataFilePath())
+            self.deletePath(self.paths.rootBackupDataFilePath())
+            #os.remove(self.paths.rootBackupDataFilePath())
 
     def clearBackupFiles(self):
         """ Clears the current backup file folder """
@@ -166,3 +169,18 @@ class RootBuilderBackup():
         backupDataExists = self.paths.rootBackupDataFilePath().exists()
         cacheDataExists = self.paths.rootCacheFilePath().exists()
         return backupDataExists or cacheDataExists
+
+    def copyTo(self, fromPath=Path, toPath=Path):
+        if (toPath.exists()):
+            os.chmod(toPath, stat.S_IWRITE)
+        copy2(fromPath, toPath)
+
+    def deletePath(self, path=Path):
+        if (path.exists()):
+            os.chmod(path, stat.S_IWRITE)
+        os.remove(path)
+
+    def moveTo(self, fromPath=Path, toPath=Path):
+        if (toPath.exists()):
+            os.chmod(toPath, stat.S_IWRITE)
+        shutil.move(fromPath, toPath)
