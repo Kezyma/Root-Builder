@@ -8,6 +8,15 @@ Root Builder allows you to manage mod files that go inside the base game folder 
 If you currently have any version of RootBuilder prior to 4.0.*, run a full clear operation and delete all files associated with RootBuilder before installing this version. They are incompatible and may cause problems if present.
 
 Copy the rootbuilder folder to Mod Organizer's plugins folder. If Mod Organizer is installed at `D:\MO\`, the plugins folder will be located at `D:\MO\plugins\`
+Make sure that the individual plugin files `*.py` are located at `D:\MO\plugins\rootbuilder\` and not directly copied into the plugins folder itself.
+
+### Uninstallation
+
+To remove Root Builder entirely. First run a Clear operation to clean up any installed files and return your game to a vanilla state.
+
+Delete the following folders from Mod Organizer, assuming Mod Organizer is installed at `D:\MO\`:
+`D:\MO\plugins\rootbuilder\`
+`D:\MO\plugins\data\rootbuilder\`
 
 ### Mod Setup
 When packaging mods for Mod Organizer, you must move any files intended to go into the base game folder into a new folder called Root that sits alongside other Data folders such as Meshes or Textures. 

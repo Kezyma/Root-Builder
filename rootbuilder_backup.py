@@ -171,16 +171,17 @@ class RootBuilderBackup():
         return backupDataExists or cacheDataExists
 
     def copyTo(self, fromPath=Path, toPath=Path):
-        if (toPath.exists()):
+        if (Path(toPath).exists()):
             os.chmod(toPath, stat.S_IWRITE)
         copy2(fromPath, toPath)
 
     def deletePath(self, path=Path):
-        if (path.exists()):
+        if (Path(path).exists()):
             os.chmod(path, stat.S_IWRITE)
         os.remove(path)
 
     def moveTo(self, fromPath=Path, toPath=Path):
-        if (toPath.exists()):
+        if (Path(toPath).exists()):
             os.chmod(toPath, stat.S_IWRITE)
         shutil.move(fromPath, toPath)
+        
