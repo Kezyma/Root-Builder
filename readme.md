@@ -1,5 +1,5 @@
 # Root Builder
-## v4.0.*
+## v4.1.*
 
 ### Introduction
 Root Builder allows you to manage mod files that go inside the base game folder instead of the Data (or Data Files for Morrowind) folder. It provides functions that allow you to copy mod files to the game folder, synchronise them with the files in Mod Organizer and to clean up and restore the original game folder. It also provides the ability to fully automate this process on each launch.
