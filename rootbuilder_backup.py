@@ -38,20 +38,21 @@ class RootBuilderBackup():
             # Iterate through everything in the current game folder and look for changes.
             gameFiles = self.files.getGameFileList()
             for file in gameFiles:
-                # If we have a record of this file, check for changes.
-                if str(file) in fileData:
-                    # If file has changed, check if we have a backup.
-                    if fileData[str(file)] != str(self.hashFile(file)):
-                        backupPath = self.paths.rootBackupPath() / self.paths.gameRelativePath(file)
-                        # If we have a backup, move the file to overwrite and restore.
-                        if backupPath.exists():
-                            overwritePath = self.paths.rootOverwritePath() / self.paths.gameRelativePath(file)
-                            shutil.move(file, overwritePath)
-                            copy2(backupPath, file)
-                # If this is a new file, move it to overwrite.
-                else:
-                    overwritePath = self.paths.rootOverwritePath() / self.paths.gameRelativePath(file)
-                    shutil.move(file, overwritePath)
+                if (Path(file).exists()):
+                    # If we have a record of this file, check for changes.
+                    if str(file) in fileData:
+                        # If file has changed, check if we have a backup.
+                        if fileData[str(file)] != str(self.hashFile(file)):
+                            backupPath = self.paths.rootBackupPath() / self.paths.gameRelativePath(file)
+                            # If we have a backup, move the file to overwrite and restore.
+                            if backupPath.exists():
+                                overwritePath = self.paths.rootOverwritePath() / self.paths.gameRelativePath(file)
+                                shutil.move(file, overwritePath)
+                                copy2(backupPath, file)
+                    # If this is a new file, move it to overwrite.
+                    else:
+                        overwritePath = self.paths.rootOverwritePath() / self.paths.gameRelativePath(file)
+                        shutil.move(file, overwritePath)
             # Iterate through the files we've got data for.
             for file in fileData.keys():
                 # Check to see if the file has been deleted.
