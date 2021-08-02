@@ -52,6 +52,8 @@ class RootBuilderBackup():
                     # If this is a new file, move it to overwrite.
                     else:
                         overwritePath = self.paths.rootOverwritePath() / self.paths.gameRelativePath(file)
+                        if not os.path.exists(os.path.dirname(overwritePath)):
+                            os.makedirs(os.path.dirname(overwritePath))
                         shutil.move(file, overwritePath)
             # Iterate through the files we've got data for.
             for file in fileData.keys():
