@@ -80,6 +80,22 @@ When a clear runs, the following happens;
 - If backup(default=true) is disabled, any backed up files will be deleted.
 - Data for the last build is deleted.
 
+### Utilities
+
+### Build Cache
+If there is currently no cache file, the base game folder is hashed and saved.
+
+### Clear Cache
+If there is a cache file, it's deleted.
+
+### Create Backup
+Runs the backup operation.
+- Vanilla game files are backed up.
+	- If cache is enabled, the game file hashes will be cached.
+
+### Delete Backup
+Deletes any existing game file backups.
+
 ### Settings
 
 #### enabled (default: true)

@@ -142,9 +142,7 @@ class RootBuilderBackup():
                     json.dump(fileData, rcJson)
             # Otherwise, clear any cache if it exists.
             else:
-                if self.paths.rootCacheFilePath().exists():    
-                    self.deletePath(self.paths.rootCacheFilePath())
-                    #os.remove(self.paths.rootCacheFilePath())
+                self.clearCache()
         return fileData
 
     def saveFileData(self, fileData=dict):
@@ -164,6 +162,15 @@ class RootBuilderBackup():
         """ Clears the current backup file folder """
         if self.paths.rootBackupPath().exists():
             shutil.rmtree(self.paths.rootBackupPath())
+
+    def buildCache(self):
+        """ Triggers a cache build if none exists """
+        fileData = self.getFileData()
+
+    def clearCache(self):
+        """ Clears the current cache file """
+        if self.paths.rootCacheFilePath().exists():    
+            self.deletePath(self.paths.rootCacheFilePath())
 
     def canRestore(self):
         """ Checks if backup data exists and therefore whether a restore is possible """
