@@ -78,6 +78,8 @@ class RootBuilderBackup():
     def hashFile(self, path):
         """ Hashes a file and returns the hash """
         func = getattr(hashlib, 'md5')()
+        if (Path(path).exists()):
+            os.chmod(path, stat.S_IWRITE)
         f = os.open(path, (os.O_RDWR | os.O_BINARY))
         for block in iter(lambda: os.read(f, 2048*func.block_size), b''):
             func.update(block)
