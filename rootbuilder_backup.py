@@ -47,14 +47,12 @@ class RootBuilderBackup():
                             # If we have a backup, move the file to overwrite and restore.
                             if backupPath.exists():
                                 overwritePath = self.paths.rootOverwritePath() / self.paths.gameRelativePath(file)
-                                shutil.move(file, overwritePath)
-                                copy2(backupPath, file)
+                                self.moveTo(str(file), str(overwritePath))
+                                self.copyTo(str(backupPath), str(file))
                     # If this is a new file, move it to overwrite.
                     else:
                         overwritePath = self.paths.rootOverwritePath() / self.paths.gameRelativePath(file)
-                        if not os.path.exists(os.path.dirname(overwritePath)):
-                            os.makedirs(os.path.dirname(overwritePath))
-                        shutil.move(file, overwritePath)
+                        self.moveTo(str(file), str(overwritePath))
             # Iterate through the files we've got data for.
             for file in fileData.keys():
                 # Check to see if the file has been deleted.
@@ -62,7 +60,7 @@ class RootBuilderBackup():
                     backupPath = self.paths.rootBackupPath() / self.paths.gameRelativePath(file)
                     # If the file has been deleted and has a backup, restore it.
                     if backupPath.exists():
-                        copy2(backupPath, file)
+                        self.copyTo(str(backupPath), str(file))
         # Clean up any empty game folders.
         gameFolders = self.files.getGameFolderList()
         for folder in gameFolders:
@@ -94,10 +92,7 @@ class RootBuilderBackup():
             backupPath = self.paths.rootBackupPath() / relativePath
             # Back them up if they don't already exist.
             if not backupPath.exists() and Path(file).exists():
-                if not os.path.exists(os.path.dirname(backupPath)):
-                    os.makedirs(os.path.dirname(backupPath))
                 self.copyTo(str(file), str(backupPath))
-                #copy2(str(file), str(backupPath))
 
     def getBackupList(self, fileData=dict):
         """ Gets a list of files that should be backed up. """
@@ -158,7 +153,6 @@ class RootBuilderBackup():
         """ Clears the current backup data file """
         if self.paths.rootBackupDataFilePath().exists():
             self.deletePath(self.paths.rootBackupDataFilePath())
-            #os.remove(self.paths.rootBackupDataFilePath())
 
     def clearBackupFiles(self):
         """ Clears the current backup file folder """
@@ -167,7 +161,7 @@ class RootBuilderBackup():
 
     def buildCache(self):
         """ Triggers a cache build if none exists """
-        fileData = self.getFileData()
+        return self.getFileData()
 
     def clearCache(self):
         """ Clears the current cache file """
@@ -185,6 +179,7 @@ class RootBuilderBackup():
     def copyTo(self, fromPath=Path, toPath=Path):
         if (Path(toPath).exists()):
             os.chmod(toPath, stat.S_IWRITE)
+        os.makedirs(os.path.dirname(toPath), exist_ok=True)
         copy2(fromPath, toPath)
 
     def deletePath(self, path=Path):
@@ -195,5 +190,5 @@ class RootBuilderBackup():
     def moveTo(self, fromPath=Path, toPath=Path):
         if (Path(toPath).exists()):
             os.chmod(toPath, stat.S_IWRITE)
+        os.makedirs(os.path.dirname(toPath), exist_ok=True)
         shutil.move(fromPath, toPath)
-        
