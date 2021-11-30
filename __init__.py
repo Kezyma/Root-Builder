@@ -7,6 +7,7 @@ from .rootbuilder_tool_build_cache import RootBuilderBuildCacheTool
 from .rootbuilder_tool_clear_cache import RootBuilderClearCacheTool
 from .rootbuilder_tool_create_backup import RootBuilderCreateBackupTool
 from .rootbuilder_tool_delete_backup import RootBuilderDeleteBackupTool
+from .rootbuilder_tool_manage import RootBuilderManageTool
 
 def createPlugins():
-    return [RootBuilderPlugin(),RootBuilderBuildTool(),RootBuilderClearTool(),RootBuilderSyncTool(),RootBuilderBuildCacheTool(),RootBuilderClearCacheTool(),RootBuilderCreateBackupTool(),RootBuilderDeleteBackupTool()]
+    return [RootBuilderPlugin(),RootBuilderBuildTool(),RootBuilderClearTool(),RootBuilderSyncTool(),RootBuilderManageTool()]
