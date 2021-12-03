@@ -1,6 +1,8 @@
 from PyQt5.QtCore import QCoreApplication
 from .rootbuilder_tool import RootBuilderTool
 from .rootbuilder import RootBuilder
+from PyQt5.QtGui import QIcon
+from pathlib import Path
 import mobase
 
 class RootBuilderSyncTool(RootBuilderTool):
@@ -26,6 +28,9 @@ class RootBuilderSyncTool(RootBuilderTool):
 
     def __tr(self, trstr):
         return QCoreApplication.translate("RootBuilder", trstr)
+
+    def icon(self):
+        return QIcon(str(Path(__file__).parent.joinpath("ui-sync.ico")))
 
     def display(self):
         self.rootBuilder.sync()
