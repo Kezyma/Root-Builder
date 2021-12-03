@@ -302,7 +302,7 @@ class RootBuilderManageTool(RootBuilderTool):
         self.exclusionsLabel = QtWidgets.QLabel(RootBuilderMainTool)
         self.exclusionsLabel.setGeometry(QtCore.QRect(10, 355, 411, 16))
         self.exclusionsLabel.setObjectName("exclusionsLabel")
-        self.exclusionsLabel.setText("<html><head/><body><p>Exclusions - <span style=\" font-style:italic;\">Files and folders to exclude.</span></p></body></html>")
+        self.exclusionsLabel.setText("<html><head/><body><p>Exclusions - <span style=\" font-style:italic;\">Files and folders to exclude from backup and cache.</span></p></body></html>")
         self.exclusionsText = QtWidgets.QLineEdit(RootBuilderMainTool)
         self.exclusionsText.setGeometry(QtCore.QRect(10, 375, 411, 20))
         self.exclusionsText.setObjectName("exclusionsText")
