@@ -21,6 +21,7 @@ Delete the following folders from Mod Organizer, assuming Mod Organizer is insta
 When installing mods that contain files that need to go in the base game folder, you will need to restructure the mod to add a new Root folder.
 
 *MGE XE for Morrowind, packed for Root Builder*
+
 ![MGE XE for Morrowind, packed for Root Builder](rootbuilder-mod-example.png "MGE XE for Morrowind, packed for Root Builder")
 
 For example, if your original mod is packaged like this;
