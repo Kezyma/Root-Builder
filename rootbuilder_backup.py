@@ -4,7 +4,7 @@ from .rootbuilder_settings import RootBuilderSettings
 from .rootbuilder_paths import RootBuilderPaths
 from .rootbuilder_files import RootBuilderFiles
 import mobase, os, hashlib, json, shutil, stat
-
+from PyQt5.QtCore import QCoreApplication, qInfo
 
 class RootBuilderBackup():
     """ Root Builder backup module. Used to back up and restore vanilla game installations. """
@@ -182,6 +182,11 @@ class RootBuilderBackup():
         os.makedirs(os.path.dirname(toPath), exist_ok=True)
         copy2(fromPath, toPath)
 
+    def replaceDir(self, fromPath=Path, toPath=Path):
+        if (Path(toPath).exists()):
+            shutil.rmtree(toPath)
+        shutil.copytree(fromPath, toPath)
+
     def deletePath(self, path=Path):
         if (Path(path).exists()):
             os.chmod(path, stat.S_IWRITE)
@@ -191,4 +196,77 @@ class RootBuilderBackup():
         if (Path(toPath).exists()):
             os.chmod(toPath, stat.S_IWRITE)
         os.makedirs(os.path.dirname(toPath), exist_ok=True)
-        shutil.move(fromPath, toPath)
+        shutil.move(str(fromPath), str(toPath))
+    
+    def migrateLegacyGameData(self):
+        """ Migrates pre-versioned data to the new folder. """
+        # Move the backup files.
+        if Path(self.paths.rootBuilderLegacyGameDataPath() / "backup").exists():
+            self.moveTo(self.paths.rootBuilderLegacyGameDataPath() / "backup", self.paths.rootBackupPath())
+
+        # Move the json files.
+        if Path(self.paths.rootBuilderLegacyGameDataPath() / "RootBuilderCacheData.json").exists():
+            self.moveTo(self.paths.rootBuilderLegacyGameDataPath() / "RootBuilderCacheData.json", self.paths.rootCacheFilePath())
+        
+        if Path(self.paths.rootBuilderLegacyGameDataPath() / "RootBuilderBackupData.json").exists():
+            self.moveTo(self.paths.rootBuilderLegacyGameDataPath() / "RootBuilderBackupData.json", self.paths.rootBackupDataFilePath())
+        
+        if Path(self.paths.rootBuilderLegacyGameDataPath() / "RootBuilderModData.json").exists():
+            self.moveTo(self.paths.rootBuilderLegacyGameDataPath() / "RootBuilderModData.json", self.paths.rootModDataFilePath())
+        
+        if Path(self.paths.rootBuilderLegacyGameDataPath() / "RootBuilderLinkData.json").exists():
+            self.moveTo(self.paths.rootBuilderLegacyGameDataPath() / "RootBuilderLinkData.json", self.paths.rootLinkDataFilePath())
+
+    def hasGameUpdateBug(self):
+        """ Determines if this game has the update bug. """
+        legacyPath = self.paths.rootBuilderLegacyGameDataPath()
+        currentPath = self.paths.rootBuilderGameDataPath() # Create it if it doesn't already exist.
+        versionFolders = sorted(self.files.getSubFolderList(legacyPath, False), reverse=True)
+        versionFolders.remove(currentPath)
+
+        # If there is at least one past version of the game, it might need a fix.
+        if len(versionFolders) > 0:
+            hasBug = False
+            # If either of the build data files are present, then we've got a bug.
+            for folder in versionFolders:
+                if Path(folder / "RootBuilderModData.json").exists():
+                    hasBug = True
+                if Path(folder / "RootBuilderLinkData.json").exists():
+                    hasBug = True
+                if Path(folder / "RootBuilderBackupData.json").exists():
+                    hasBug = True
+            return hasBug
+        else:
+            return False
+    
+    def fixGameUpdateBug(self):
+        """ Moves files to try and resolve the game update bug. """
+        legacyPath = self.paths.rootBuilderLegacyGameDataPath()
+        currentPath = self.paths.rootBuilderGameDataPath()
+        versionFolders = sorted(self.files.getSubFolderList(legacyPath, False), reverse=True)
+        versionFolders.remove(currentPath)
+        qInfo(str(currentPath))
+        # If there is at least one past version of the game, it might need a fix.
+        if len(versionFolders) > 0:
+            # Get the current and previous version folders.
+            foundBug = False
+            for folder in versionFolders:
+                qInfo(str(folder))
+                if not foundBug:
+                    if Path(folder / "RootBuilderModData.json").exists():
+                        self.moveTo(str(folder / "RootBuilderModData.json"), str(self.paths.rootModDataFilePath()))
+                        foundBug = True
+                    if Path(folder / "RootBuilderLinkData.json").exists():
+                        self.moveTo(str(folder / "RootBuilderLinkData.json"), str(self.paths.rootLinkDataFilePath()))
+                        foundBug = True
+                    if Path(folder / "RootBuilderBackupData.json").exists():
+                        self.moveTo(str(folder / "RootBuilderBackupData.json"), str(self.paths.rootBackupDataFilePath()))
+                        foundBug = True
+                    if foundBug and Path(folder / "RootBuilderCacheData.json").exists():
+                        self.copyTo(str(folder / "RootBuilderCacheData.json"), str(self.paths.rootCacheFilePath()))
+                    if foundBug and Path(folder / "backup").exists():
+                        self.replaceDir(str(folder / "backup"), str(self.paths.rootBackupPath()))
+
+            
+
+

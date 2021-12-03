@@ -17,7 +17,7 @@ class RootBuilderBase():
     #endregion
 
     def version(self):
-        return mobase.VersionInfo(4, 2, 1, mobase.ReleaseType.BETA) 
+        return mobase.VersionInfo(4, 2, 2, mobase.ReleaseType.BETA) 
 
     def isActive(self):
         return self.rootBuilder.settings.enabled()

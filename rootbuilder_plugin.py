@@ -1,4 +1,5 @@
-from PyQt5.QtCore import QCoreApplication
+from PyQt5.QtCore import QCoreApplication, qInfo
+from PyQt5 import QtCore, QtGui, QtWidgets
 import mobase
 
 from .rootbuilder import RootBuilder
@@ -16,6 +17,7 @@ class RootBuilderPlugin(RootBuilderBase, mobase.IPluginFileMapper):
         self.startingRootExe = False
         self.organiser.onAboutToRun(lambda appName: self.build(appName))
         self.organiser.onFinishedRun(lambda appName, resultCode: self.clear(appName, resultCode))
+        self.organiser.onUserInterfaceInitialized(lambda window: self.onInitialise(window))
         return True
 
     def name(self):
@@ -67,3 +69,27 @@ class RootBuilderPlugin(RootBuilderBase, mobase.IPluginFileMapper):
                 return False
         return True
         
+    def onInitialise(self, mainWindow):
+        self.rootBuilder.migrate()
+        if self.rootBuilder.backup.hasGameUpdateBug():
+            self.updateWarning()
+
+    def updateWarning(self):
+        warnMsg = "<p>Your game has been updated since Root Builder last cleared. This can cause problems.</p>"
+        warnMsg += "<p>Clicking OK will run Root Builder's update fix, which will do the following;</p>"
+        warnMsg += "<ul>"
+        warnMsg += "<li>Run a clear, restoring your game to the last version that Root Builder backed up. <b>You will need to exit Mod Organizer and re-update your game to the latest version before running a build.</b></li>"
+        warnMsg += "<li>Changes since your last build, including files from the game updating, will be moved to your overwrite folder. <b>It is suggested that you clear overwrite to avoid unwanted side effects.</b></li>"
+        warnMsg += "<li>Prepare to take a fresh backup and cache the next time a Root Builder builds.</li>"
+        warnMsg += "</ul>"
+        warnMsg += "<p>Once you run this fix, Root Builder will return to normal function.</p>"
+        warnMsg += "<p>If you do not wish to run the update fix now, or wish to resolve the issue manually, click Cancel to continue to Mod Organizer.</p>"
+        msg = QtWidgets.QMessageBox()
+        msg.setIcon(QtWidgets.QMessageBox.Warning)
+        msg.setText(warnMsg)
+        msg.setWindowTitle("Root Builder Update Warning")
+        msg.setStandardButtons(QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel)
+        res = msg.exec()
+        if res == QtWidgets.QMessageBox.Ok:
+            self.rootBuilder.updateFix()
+        return res

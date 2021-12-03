@@ -29,7 +29,7 @@ class RootBuilderCopy():
             relativePath = self.paths.rootRelativePath(file)
             modFileData = {
                     "Path" : str(file),
-                    "Hash" : ""#str(self.backup.hashFile(file))
+                    "Hash" : str(self.backup.hashFile(file))
                 }
             # If this is already in our data, compare them, update if newer.
             if str(relativePath) in fileData:
@@ -45,7 +45,6 @@ class RootBuilderCopy():
             if sourcePath.exists():
                 if not destPath.parent.exists():
                     os.makedirs(destPath.parent)
-                #copy2(sourcePath, destPath)
                 self.backup.copyTo(sourcePath, destPath)
         # Save data
         self.saveModData(fileData)
@@ -68,7 +67,6 @@ class RootBuilderCopy():
                         destPath = Path(modData[str(relativePath)]["Path"])
                         if not destPath.parent.exists():
                             os.makedirs(destPath.parent)
-                        #copy2(file, destPath)
                         self.backup.copyTo(file, destPath)
                         modData[str(relativePath)]["Hash"] = fileHash
                 elif str(file) in backupData:
@@ -78,7 +76,6 @@ class RootBuilderCopy():
                         overwritePath = self.paths.rootOverwritePath() / relativePath
                         if not overwritePath.parent.exists():
                             os.makedirs(overwritePath.parent)
-                        #copy2(file, overwritePath)
                         self.backup.copyTo(file, overwritePath)
                         modData[str(relativePath)] = { "Path" : str(overwritePath), "Hash" : fileHash }
                 else:
@@ -87,7 +84,6 @@ class RootBuilderCopy():
                     if not overwritePath.parent.exists():
                         os.makedirs(overwritePath.parent)
                     self.backup.copyTo(file, overwritePath)
-                    #copy2(file, overwritePath)
                     modData.update({str(relativePath): {"Path": str(overwritePath), "Hash": self.backup.hashFile(file)}})
             # Save mod data.
             self.saveModData(modData)
@@ -106,7 +102,6 @@ class RootBuilderCopy():
                 # If the file exists in the game, delete it.
                 if gamePath.exists():
                     self.backup.deletePath(gamePath)
-                    #os.remove(gamePath)
             # Clear the existing mod data
             self.clearModData()
         return
@@ -135,6 +130,6 @@ class RootBuilderCopy():
         """ Removes any existing mod data. """
         if self.paths.rootModDataFilePath().exists():
             self.backup.deletePath(self.paths.rootModDataFilePath())
-            #os.remove(self.paths.rootModDataFilePath())
+
 
     

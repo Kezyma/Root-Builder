@@ -23,6 +23,16 @@ class RootBuilder():
     def __tr(self, trstr):
         return QCoreApplication.translate("RootBuilder", trstr)
 
+    def migrate(self):
+        self.backup.migrateLegacyGameData()
+
+    def updateFix(self):
+        if self.backup.hasGameUpdateBug():
+            self.backup.fixGameUpdateBug()
+            self.clear()
+            self.backup.clearBackupFiles()
+            self.backup.clearCache()
+
     def build(self):
         qInfo("RootBuilder: Starting build.")
 

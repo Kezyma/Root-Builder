@@ -9,6 +9,13 @@ class RootBuilderPaths():
         self.organiser = organiser
         super(RootBuilderPaths, self).__init__()
 
+    _gameVersion = str()
+    def gameVersion(self):
+        """ Gets the current game version string. """
+        if self._gameVersion == str():
+            self._gameVersion = self.organiser.managedGame().gameVersion()
+        return self._gameVersion
+
     _gamePath = str()
     def gamePath(self):
         """ Gets the path to the current game folder. """
@@ -50,16 +57,25 @@ class RootBuilderPaths():
     def rootBackupPath(self):
         """ Gets the path to the backup folder for the current game. """
         if self._rootBackupPath == str():
-            self._rootBackupPath = self.rootBuilderGameDataPath() / "backup"
+            self._rootBackupPath = Path(self.rootBuilderGameDataPath()) / "backup"
         if not Path(self._rootBackupPath).exists():
             os.makedirs(self._rootBackupPath)
         return Path(self._rootBackupPath)
+
+    _rootBuilderLegacyGameDataPath = str()
+    def rootBuilderLegacyGameDataPath(self):
+        """ Gets the path to the RootBuilder data folder for the current game. LEGACY. """
+        if self._rootBuilderLegacyGameDataPath == str():
+            self._rootBuilderLegacyGameDataPath = self.pluginDataPath() / self.safeGamePathName() 
+        if not Path(self._rootBuilderLegacyGameDataPath).exists():
+            os.makedirs(self._rootBuilderLegacyGameDataPath)
+        return Path(self._rootBuilderLegacyGameDataPath)
 
     _rootBuilderGameDataPath = str()
     def rootBuilderGameDataPath(self):
         """ Gets the path to the RootBuilder data folder for the current game. """
         if self._rootBuilderGameDataPath == str():
-            self._rootBuilderGameDataPath = self.pluginDataPath() / self.safeGamePathName()
+            self._rootBuilderGameDataPath = self.pluginDataPath() / self.safeGamePathName() / self.safeVersionName(self.gameVersion())
         if not Path(self._rootBuilderGameDataPath).exists():
             os.makedirs(self._rootBuilderGameDataPath)
         return Path(self._rootBuilderGameDataPath)
@@ -110,6 +126,10 @@ class RootBuilderPaths():
     def safePathName(self, path):
         """ Gets a file safe string representing a specific path. """
         return "_".join(os.path.normpath(path).split(os.path.sep)).replace(":", "").replace(" ", "_")
+
+    def safeVersionName(self, version):
+        """ Gets a file safe string representing a specific game version. """
+        return version.replace(".", "_").replace(":", "_")
 
     def sharedPath(self, basePath, childPath):
         """ Determines whether one path is a child of another path. """

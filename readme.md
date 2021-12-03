@@ -62,8 +62,6 @@ A new item will appear in the tools menu of Mod Organizer to support Root Builde
 
 ![Root Builder settings menu](rootbuilder-settings-menu.png "Root Builder settings menu")
 
-If the base game is updated, you will need to open the utilities menu and click 'Delete Cache' and 'Delete Backup' followed by 'Create Cache' and 'Create Backup' to update the stored data about the vanilla game.
-
 #### Build
 When a build runs, the following happpens;
 - The current game folder is hashed and the data recorded.
@@ -97,6 +95,8 @@ When a clear runs, the following happens;
 - Any base game files that have changed and also have a backup will be restored from the backup.
 - If backup(default=true) is disabled, any backed up files will be deleted.
 - Data for the last build is deleted.
+
+Please ensure you ALWAYS run a clear operation before exiting Mod Organizer if you have previously run a build. If your game is updated while files from a build are still present in the game folder, Root Builder will assume those files are part of a new game update and treat them like vanilla game files in the future.
 
 ### Utilities
 

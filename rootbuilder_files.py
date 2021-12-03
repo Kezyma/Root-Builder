@@ -128,7 +128,7 @@ class RootBuilderFiles():
                 res.extend(self.getFolderFileList(afp))
         return res
 
-    def getSubFolderList(self, path):
+    def getSubFolderList(self, path, recursive=True):
         """ Lists all folders in a folder, including all subfolders """
         res = []   
         # Grab the full contents of the folder.
@@ -137,5 +137,6 @@ class RootBuilderFiles():
             # If the content is a folder, add it and load subfolders.
             if (Path.is_dir(afp)):
                 res.append(afp)
-                res.extend(self.getSubFolderList(afp))
+                if (recursive):
+                    res.extend(self.getSubFolderList(afp, recursive))
         return res
