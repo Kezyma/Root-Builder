@@ -54,8 +54,11 @@ With Root Builder's default settings, you don't need to do anything else, when y
 A new item will appear in the tools menu of Mod Organizer to support Root Builder, this includes a menu with utilities and settings and options to run the main functions of Root Builder.
 
 *Location of Root Builder tools menu*
+
 ![Location of Root Builder tools menu](rootbuilder-tools-menu.png "Location of Root Builder tools menu")
+
 *Root Builder settings menu*
+
 ![Root Builder settings menu](rootbuilder-settings-menu.png "Root Builder settings menu")
 
 If the base game is updated, you will need to open the utilities menu and click 'Delete Cache' and 'Delete Backup' followed by 'Create Cache' and 'Create Backup' to update the stored data about the vanilla game.
