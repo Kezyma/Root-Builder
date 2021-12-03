@@ -11,7 +11,7 @@ Copy the rootbuilder folder to Mod Organizer's plugins folder. If Mod Organizer 
 Make sure that the individual plugin files `*.py` are located at `D:\MO\plugins\rootbuilder\` and not directly copied into the plugins folder itself.
 
 ### Uninstallation
-To remove Root Builder entirely. First run a Clear operation to clean up any installed files and return your game to a vanilla state.
+To remove Root Builder entirely, first run a Clear operation to clean up any installed files and return your game to a vanilla state.
 
 Delete the following folders from Mod Organizer, assuming Mod Organizer is installed at `D:\MO\`:
 `D:\MO\plugins\rootbuilder\`
