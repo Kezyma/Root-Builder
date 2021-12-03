@@ -1,17 +1,16 @@
 # Root Builder
-## v4.1.*
+## v4.2.*
 
 ### Introduction
-Root Builder allows you to manage mod files that go inside the base game folder instead of the Data (or Data Files for Morrowind) folder. It provides functions that allow you to copy mod files to the game folder, synchronise them with the files in Mod Organizer and to clean up and restore the original game folder. It also provides the ability to fully automate this process on each launch.
+Root Builder is a Mod Organizer 2 plugin that allows you to manage files in the base game folder, not just the Data folder. It is designed to allow you to keep all of your modding inside Mod Organizer and leave the game folder completely untouched. 
 
 ### Installation
-If you currently have any version of RootBuilder prior to 4.0.*, run a full clear operation and delete all files associated with RootBuilder before installing this version. They are incompatible and may cause problems if present.
+If you have any version of Root Builder earlier than version 4, run a clear operation and uninstall that version.
 
 Copy the rootbuilder folder to Mod Organizer's plugins folder. If Mod Organizer is installed at `D:\MO\`, the plugins folder will be located at `D:\MO\plugins\`
 Make sure that the individual plugin files `*.py` are located at `D:\MO\plugins\rootbuilder\` and not directly copied into the plugins folder itself.
 
 ### Uninstallation
-
 To remove Root Builder entirely. First run a Clear operation to clean up any installed files and return your game to a vanilla state.
 
 Delete the following folders from Mod Organizer, assuming Mod Organizer is installed at `D:\MO\`:
@@ -19,7 +18,10 @@ Delete the following folders from Mod Organizer, assuming Mod Organizer is insta
 `D:\MO\plugins\data\rootbuilder\`
 
 ### Mod Setup
-When packaging mods for Mod Organizer, you must move any files intended to go into the base game folder into a new folder called Root that sits alongside other Data folders such as Meshes or Textures. 
+When installing mods that contain files that need to go in the base game folder, you will need to restructure the mod to add a new Root folder.
+
+*MGE XE for Morrowind, packed for Root Builder*
+![MGE XE for Morrowind, packed for Root Builder](rootbuilder-mod-example.png "MGE XE for Morrowind, packed for Root Builder")
 
 For example, if your original mod is packaged like this;
 	
@@ -29,7 +31,8 @@ For example, if your original mod is packaged like this;
 	Data\Textures\ASpecialTexture.dds
 	Data\Meshes\VeryPrettyModel.nif
 
-You would need to rearrange it for Mod Organizer as follows;
+SomeModDll.dll and SomeModExe.exe both need to go in the base game folder, while all the others are standard meshes, textures and an esp that go in the data folder like normal.
+To repackage this mod to work with Root Builder, it'll need to be structured like this inside Mod Organizer, with SomeModDll.dll and SomeModExe.exe inside a Root folder, alongside the textures, meshes and esp;
 	
 	Root\SomeModDll.dll
 	Root\SomeModExe.exe
@@ -37,14 +40,25 @@ You would need to rearrange it for Mod Organizer as follows;
 	Textures\ASpecialTexture.dds
 	Meshes\VeryPrettyModel.nif
 
-Where the esp file and the Meshes and Textures will be picked up by Mod Organizer as usual, but the files intended for the base game folder are now in a subfolder called Root.
+With this structure, the meshes, textures and esp will be recognised by Mod Organizer as normal, while SomeModExe.exe and SomeModDll.dll will be recognised by Root Builder.
+
+If a mod only contains Root files, Mod Organizer will sometimes warn you that the mod isn't packed correctly or contains no files. You can safely ignore this warning.
+
+If your mod contains an exe file that you need to add to Mod Organizer, you have two options;
+1. You can add the exe directly from the mod folder itself, when you run it, Root Builder will detect that it is in a root mod and will switch to running it from the game folder. This does NOT support running the exe with arguments, if you need arguments, use the other method.
+2. Manually run a build (see below), then add the exe to Mod Organizer from the game folder like normal, then run a clear (see below).
 
 ### Usage
-A new item will appear in the tools menu of Mod Organizer with the three main functions of RootBuilder, build, sync and clear.
+With Root Builder's default settings, you don't need to do anything else, when you run an app through Mod Organizer, all the Root files will be copied across to your game before it runs and the game will be restored to its original state when the app closes. Any new files or changes to the vanilla game will be moved to the overwrite folder in Mod Organizer.
 
-RootBuilder will, by default, run a build whenever you run an application through Mod Organizer and a clear when the application closes, this can be turned off in settings by disabling autobuild(default=true).
+A new item will appear in the tools menu of Mod Organizer to support Root Builder, this includes a menu with utilities and settings and options to run the main functions of Root Builder.
 
-Ideally, you want to have the game folder as unmodified as possible during the first build if backup(default=true) and/or cache(default=true) is enabled. This enables RootBuilder to correctly restore a vanilla game on each clear as well as more accurately track every change made to the game. If you wish to change the game files in the cache and/or backup, disable the setting, run a build and then run a clear. Then re-enable the setting. On the next build, a fresh backup and/or cache will be taken.
+*Location of Root Builder tools menu*
+![Location of Root Builder tools menu](rootbuilder-tools-menu.png "Location of Root Builder tools menu")
+*Root Builder settings menu*
+![Root Builder settings menu](rootbuilder-settings-menu.png "Root Builder settings menu")
+
+If the base game is updated, you will need to open the utilities menu and click 'Delete Cache' and 'Delete Backup' followed by 'Create Cache' and 'Create Backup' to update the stored data about the vanilla game.
 
 #### Build
 When a build runs, the following happpens;
@@ -82,10 +96,10 @@ When a clear runs, the following happens;
 
 ### Utilities
 
-### Build Cache
+### Create Cache
 If there is currently no cache file, the base game folder is hashed and saved.
 
-### Clear Cache
+### Delete Cache
 If there is a cache file, it's deleted.
 
 ### Create Backup
@@ -114,10 +128,12 @@ If disabled, RootBuilder will try to identify any conflicts between your install
 If disabled, any existing backup will be deleted on the next clear.
 
 #### autobuild (default: true)
-If enabled, whenever you run an application through Mod Organizer, a build will be run before the application and a clear will be run when the application closes.
+If enabled, whenever you run an application through Mod Organizer, a build will be run before the application and a clear will be run when the application closes. 
+If you disable this setting, you will need to manually use the build and clear functions.
 
 #### redirect (default: true)
 If enabled, when running an application through Mod Organizer, if that application is in a root folder within a mod and also exists in the game folder, it will redirect the application to launch from the game folder instead.
+If you disable this, make sure to update any apps currently added to Mod Organizer to point to an exe within the game folder itself.
 
 #### usvfsmode (default: false)
 Requires autobuild to be enabled.
@@ -127,7 +143,7 @@ If enabled, instead of copying files to and from the game folder, RootBuilder wi
 Please note, this does not work with all game and mod combinations.
 
 #### linkmode (default: false)
-Requires usvfsmode to be enabled.
+Requires usvfsmode and autobuild to be enabled.
 
 If enabled, on top of using usvfs, RootBuilder will create links in the game folder pointing to specific mod root files. This can improve the compatibility of usvfs mode.
 
