@@ -202,7 +202,7 @@ class RootBuilderBackup():
         """ Migrates pre-versioned data to the new folder. """
         # Move the backup files.
         if Path(self.paths.rootBuilderLegacyGameDataPath() / "backup").exists():
-            self.moveTo(self.paths.rootBuilderLegacyGameDataPath() / "backup", self.paths.rootBackupPath())
+            self.moveTo(self.paths.rootBuilderLegacyGameDataPath() / "backup", self.paths.rootBuilderGameDataPath())
 
         # Move the json files.
         if Path(self.paths.rootBuilderLegacyGameDataPath() / "RootBuilderCacheData.json").exists():
