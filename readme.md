@@ -85,7 +85,7 @@ When a sync runs, the following happens;
 	- If it's a new file, it will be copied to Mod Organizer's overwrite folder.
 - Data for the current build is updated to include references to any files that were copied to the overwrite folder and any changed hashes are updated.
 
-Please note, if you run a sync that copies files to overwrite and then you move them to a mod, you must run build again or RootBuilder will think they are still in the overwrite folder and may copy them back there on the next sync or clear.
+Please note, if you run a sync that copies files to overwrite and then you move them to a mod, you must run build again or Root Builder will think they are still in the overwrite folder and may copy them back there on the next sync or clear.
 
 #### Clear
 When a clear runs, the following happens;
@@ -117,7 +117,7 @@ Deletes any existing game file backups.
 ### Settings
 
 #### enabled (default: true)
-Determines whether the RootBuilder plugin is enabled in Mod Organizer.
+Determines whether the Root Builder plugin is enabled in Mod Organizer.
 
 #### cache (default: true)
 If enabled, on the first build being run, the hashes of the game folder will be cached. This is ideal if you have a fresh game installation or are confident that you do not plan on changing files in the game folder manually.
@@ -127,7 +127,7 @@ If disabled, if any cache already exists for the current game, it will be cleare
 #### backup (default: true)
 If enabled, on the first build being run, the contents of the game folder will be backed up. This is ideal if you have a fresh game installation or are confident that you do not plan on changing files in the game folder manually.
 
-If disabled, RootBuilder will try to identify any conflicts between your installed mods and the game folder and back only those conflicts up.
+If disabled, Root Builder will try to identify any conflicts between your installed mods and the game folder and back only those conflicts up.
 
 If disabled, any existing backup will be deleted on the next clear.
 
@@ -142,14 +142,14 @@ If you disable this, make sure to update any apps currently added to Mod Organiz
 #### usvfsmode (default: false)
 Requires autobuild to be enabled.
 
-If enabled, instead of copying files to and from the game folder, RootBuilder will utilise Mod Organizer's usvfs to handle root files. This will only work with autobuild since it is handled when you launch an application through Mod Organizer. Do not attempt to manually build, sync or clear when using this mode. Make sure to run a clear before enabling/disabling this setting or unintentional results may occur.
+If enabled, instead of copying files to and from the game folder, Root Builder will utilise Mod Organizer's usvfs to handle root files. This will only work with autobuild since it is handled when you launch an application through Mod Organizer. Do not attempt to manually build, sync or clear when using this mode. Make sure to run a clear before enabling/disabling this setting or unintentional results may occur.
 
 Please note, this does not work with all game and mod combinations.
 
 #### linkmode (default: false)
 Requires usvfsmode and autobuild to be enabled.
 
-If enabled, on top of using usvfs, RootBuilder will create links in the game folder pointing to specific mod root files. This can improve the compatibility of usvfs mode.
+If enabled, on top of using usvfs, Root Builder will create links in the game folder pointing to specific mod root files. This can improve the compatibility of usvfs mode.
 
 Please note, this does not work with all game and mod combinations.
 
@@ -157,6 +157,10 @@ Please note, this does not work with all game and mod combinations.
 A comma separated list of file extensions that are valid for linking if linkmode is enabled.
 
 #### exclusions (default: "Saves,Morrowind.ini")
-A comma separated list of files and folders in the base game folder that will be ignored by RootBuilder.
+A comma separated list of files and folders in the base game folder that will be ignored by Root Builder.
 
 Any mods that contain these files and folders will be ignored and skipped during build.
+
+### Game Updates
+If you have autobuild disabled, please ensure you always clear Root Builder. 
+If your game updates while you have root files copied across, Root Builder will show you a warning with steps to remedy the issue the next time you run Mod Organizer. 
