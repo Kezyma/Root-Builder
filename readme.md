@@ -162,5 +162,5 @@ A comma separated list of files and folders in the base game folder that will be
 Any mods that contain these files and folders will be ignored and skipped during build.
 
 ### Game Updates
-If you have autobuild disabled, please ensure you always clear Root Builder. 
+If you have autobuild disabled, please ensure you always clear Root Builder before exiting Mod Organizer. 
 If your game updates while you have root files copied across, Root Builder will show you a warning with steps to remedy the issue the next time you run Mod Organizer. 
