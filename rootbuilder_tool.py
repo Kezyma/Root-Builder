@@ -8,21 +8,17 @@ import mobase
 
 class RootBuilderTool(RootBuilderBase, mobase.IPluginTool):
 
-    #region Init
     def __init__(self):
-        super(RootBuilderTool, self).__init__()
+        super().__init__()
 
     def init(self, organiser=mobase.IOrganizer):
-        self.organiser = organiser
-        self.rootBuilder = RootBuilder(self.organiser)
-        return True
-    #endregion
+        return super().init(organiser)
 
     def settings(self):
         return []
 
     def __tr(self, trstr):
-        return QCoreApplication.translate("RootBuilder", trstr)
+        return QCoreApplication.translate(self.baseName(), trstr)
         
     def master(self):
         return self.baseName()

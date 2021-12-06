@@ -1,18 +1,16 @@
 from PyQt5.QtCore import QCoreApplication
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtWidgets
 from .rootbuilder_tool import RootBuilderTool
 from .rootbuilder import RootBuilder
 import mobase
 
 class RootBuilderManageTool(RootBuilderTool):
     def __init__(self):
-        super(RootBuilderManageTool, self).__init__()
+        super().__init__()
 
     def init(self, organiser=mobase.IOrganizer):
-        self.organiser = organiser
-        self.rootBuilder = RootBuilder(self.organiser)
         self.dialog = self.getDialog()
-        return True
+        return super().init(organiser)
 
     def name(self):
         return self.baseName() + " Manager Tool"
@@ -27,7 +25,7 @@ class RootBuilderManageTool(RootBuilderTool):
         return self.__tr("Opens the Root Builder Manager.")
 
     def __tr(self, trstr):
-        return QCoreApplication.translate("RootBuilder", trstr)
+        return QCoreApplication.translate(self.baseName(), trstr)
 
     def display(self):
         self.dialog.show()

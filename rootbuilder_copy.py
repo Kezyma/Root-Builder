@@ -1,11 +1,9 @@
-from PyQt5.QtCore import QCoreApplication
-from shutil import copy2
 from pathlib import Path
 from .rootbuilder_settings import RootBuilderSettings
 from .rootbuilder_paths import RootBuilderPaths
 from .rootbuilder_files import RootBuilderFiles
 from .rootbuilder_backup import RootBuilderBackup
-import mobase, os, hashlib, json, shutil, stat
+import mobase, os, json
 
 class RootBuilderCopy():
     """ Root Builder copy module. Used to copy files to and from mod folders. """
@@ -16,7 +14,7 @@ class RootBuilderCopy():
         self.paths = RootBuilderPaths(self.organiser)
         self.files = RootBuilderFiles(self.organiser)
         self.backup = RootBuilderBackup(self.organiser)
-        super(RootBuilderCopy, self).__init__()
+        super().__init__()
 
     def build(self):
         """ Copies root mod files to the game folder """

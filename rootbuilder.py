@@ -18,10 +18,7 @@ class RootBuilder():
         self.mapper = RootBuilderMapper(self.organiser)
         self.linker = RootBuilderLinker(self.organiser)
         self.copier = RootBuilderCopy(self.organiser)
-        super(RootBuilder, self).__init__()
-
-    def __tr(self, trstr):
-        return QCoreApplication.translate("RootBuilder", trstr)
+        super().__init__()
 
     def migrate(self):
         self.backup.migrateLegacyGameData()

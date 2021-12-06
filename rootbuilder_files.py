@@ -1,9 +1,8 @@
-from PyQt5.QtCore import QCoreApplication, qInfo
 from .rootbuilder_paths import RootBuilderPaths
 from .rootbuilder_settings import RootBuilderSettings
 from pathlib import Path
 from os import listdir
-import mobase, pathlib
+import mobase
 
 class RootBuilderFiles():
     """ Root Builder file module. Used to get collections of files from different game paths. """
@@ -12,7 +11,7 @@ class RootBuilderFiles():
         self.organiser = organiser
         self.settings = RootBuilderSettings(self.organiser)
         self.paths = RootBuilderPaths(self.organiser)
-        super(RootBuilderFiles, self).__init__()
+        super().__init__()
 
     def getGameFileList(self):
         """ Gets a list of all valid files in the current game folder. """

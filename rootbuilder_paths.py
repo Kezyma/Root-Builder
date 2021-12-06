@@ -1,13 +1,12 @@
-from PyQt5.QtCore import QCoreApplication
-from pathlib import Path
-import mobase, pathlib, os
+from pathlib import Path, PurePath
+import mobase, os
 
 class RootBuilderPaths():
     """ Root Builder path module. Used to load various paths for the plugin. """
 
     def __init__(self, organiser=mobase.IOrganizer):
         self.organiser = organiser
-        super(RootBuilderPaths, self).__init__()
+        super().__init__()
 
     _gameVersion = str()
     def gameVersion(self):
@@ -34,7 +33,7 @@ class RootBuilderPaths():
     def gameDataDir(self):
         """ Gets the name of the data directory for the current game. """
         if self._gameDataDir == str():
-            self._gameDataDir = pathlib.PurePath(Path(self.organiser.managedGame().dataDirectory().path())).name
+            self._gameDataDir = PurePath(Path(self.organiser.managedGame().dataDirectory().path())).name
         return self._gameDataDir
 
     _rootOverwritePath = str()

@@ -1,11 +1,9 @@
-from PyQt5.QtCore import QCoreApplication
-from shutil import copy2
 from pathlib import Path
 from .rootbuilder_settings import RootBuilderSettings
 from .rootbuilder_paths import RootBuilderPaths
 from .rootbuilder_files import RootBuilderFiles
 from .rootbuilder_backup import RootBuilderBackup
-import mobase, os, hashlib, json, shutil
+import mobase, os, json
 
 class RootBuilderLinker():
     """ Root Builder link module. Used to create links for specific file types. """
@@ -16,7 +14,7 @@ class RootBuilderLinker():
         self.paths = RootBuilderPaths(self.organiser)
         self.files = RootBuilderFiles(self.organiser)
         self.backup = RootBuilderBackup(self.organiser)
-        super(RootBuilderLinker, self).__init__()
+        super().__init__()
 
     def build(self):
         """ Generates links for all linkable mod files and saves records of each of them """
@@ -28,7 +26,6 @@ class RootBuilderLinker():
             # If the linkable file is already in the game folder, rename it.
             if gamePath.exists():
                 self.backup.copyTo(gamePath, Path(str(gamePath) + ".rbackup"))
-                #shutil.move(gamePath, Path(str(gamePath) + ".rbackup"))
             # Create the dirs if they don't exist.
             if not gamePath.parent.exists():
                     os.makedirs(gamePath.parent)
@@ -53,7 +50,5 @@ class RootBuilderLinker():
                     gamePath.unlink(True)
                 if Path(str(gamePath) + ".rbackup").exists():
                     self.backup.moveTo(Path(str(gamePath) + ".rbackup"), gamePath)
-                    #shutil.move(Path(str(gamePath) + ".rbackup"), gamePath)
             # Remove our link data file.
             self.backup.deletePath(self.paths.rootLinkDataFilePath())
-            #os.remove(self.paths.rootLinkDataFilePath())

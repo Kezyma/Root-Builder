@@ -1,5 +1,5 @@
-from PyQt5.QtCore import QCoreApplication, qInfo
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtCore import QCoreApplication
+from PyQt5 import QtWidgets
 import mobase
 
 from .rootbuilder import RootBuilder
@@ -9,16 +9,15 @@ class RootBuilderPlugin(RootBuilderBase, mobase.IPluginFileMapper):
     """ Main Root Builder plugin. Handles auto build features """
 
     def __init__(self):
-        super(RootBuilderPlugin, self).__init__()
+        super().__init__()
 
     def init(self, organiser=mobase.IOrganizer):
-        self.organiser = organiser
-        self.rootBuilder = RootBuilder(self.organiser)
+        res = super().init(organiser)
         self.startingRootExe = False
         self.organiser.onAboutToRun(lambda appName: self.build(appName))
         self.organiser.onFinishedRun(lambda appName, resultCode: self.clear(appName, resultCode))
         self.organiser.onUserInterfaceInitialized(lambda window: self.onInitialise(window))
-        return True
+        return res
 
     def name(self):
         return self.baseName()
@@ -30,7 +29,7 @@ class RootBuilderPlugin(RootBuilderBase, mobase.IPluginFileMapper):
         return self.__tr("Allows management of base game files by utilising a Root folder within individual mods.")
 
     def __tr(self, trstr):
-        return QCoreApplication.translate("RootBuilder", trstr)
+        return QCoreApplication.translate(self.baseName(), trstr)
 
     def mappings(self):
         """ Returns mappings, if there are any, for usvfs mode. """

@@ -1,4 +1,3 @@
-from PyQt5.QtCore import QCoreApplication
 from .rootbuilder_settings import RootBuilderSettings
 from .rootbuilder_paths import RootBuilderPaths
 from .rootbuilder_files import RootBuilderFiles
@@ -12,7 +11,7 @@ class RootBuilderMapper():
         self.settings = RootBuilderSettings(self.organiser)
         self.paths = RootBuilderPaths(self.organiser)
         self.files = RootBuilderFiles(self.organiser)
-        super(RootBuilderMapper, self).__init__()
+        super().__init__()
 
     def mappings(self):
         """ Gets the mappings for the current game. """

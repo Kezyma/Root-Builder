@@ -4,7 +4,6 @@ from .rootbuilder_settings import RootBuilderSettings
 from .rootbuilder_paths import RootBuilderPaths
 from .rootbuilder_files import RootBuilderFiles
 import mobase, os, hashlib, json, shutil, stat
-from PyQt5.QtCore import QCoreApplication, qInfo
 
 class RootBuilderBackup():
     """ Root Builder backup module. Used to back up and restore vanilla game installations. """
@@ -14,7 +13,7 @@ class RootBuilderBackup():
         self.settings = RootBuilderSettings(self.organiser)
         self.paths = RootBuilderPaths(self.organiser)
         self.files = RootBuilderFiles(self.organiser)
-        super(RootBuilderBackup, self).__init__()
+        super().__init__()
 
     def backup(self):
         """ Backs up base game files, or conflicts if backup is disabled. """
@@ -245,13 +244,11 @@ class RootBuilderBackup():
         currentPath = self.paths.rootBuilderGameDataPath()
         versionFolders = sorted(self.files.getSubFolderList(legacyPath, False), reverse=True)
         versionFolders.remove(currentPath)
-        qInfo(str(currentPath))
         # If there is at least one past version of the game, it might need a fix.
         if len(versionFolders) > 0:
             # Get the current and previous version folders.
             foundBug = False
             for folder in versionFolders:
-                qInfo(str(folder))
                 if not foundBug:
                     if Path(folder / "RootBuilderModData.json").exists():
                         self.moveTo(str(folder / "RootBuilderModData.json"), str(self.paths.rootModDataFilePath()))

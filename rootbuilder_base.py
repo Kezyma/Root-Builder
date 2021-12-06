@@ -8,7 +8,7 @@ class RootBuilderBase():
 
     #region Init
     def __init__(self):
-        super(RootBuilderBase, self).__init__()
+        super().__init__()
 
     def init(self, organiser=mobase.IOrganizer):
         self.organiser = organiser
@@ -17,13 +17,13 @@ class RootBuilderBase():
     #endregion
 
     def version(self):
-        return mobase.VersionInfo(4, 2, 2, mobase.ReleaseType.BETA) 
+        return mobase.VersionInfo(4, 2, 3, mobase.ReleaseType.BETA) 
 
     def isActive(self):
         return self.rootBuilder.settings.enabled()
 
     def __tr(self, trstr):
-        return QCoreApplication.translate("RootBuilder", trstr)
+        return QCoreApplication.translate(self.baseName(), trstr)
 
     def icon(self):
         return QIcon(str(Path(__file__).parent.joinpath("ui-menu.ico")))

@@ -6,7 +6,7 @@ class RootBuilderSettings():
 
     def __init__(self, organiser=mobase.IOrganizer):
         self.organiser = organiser
-        super(RootBuilderSettings, self).__init__()
+        super().__init__()
 
     def __tr(self, trstr):
         return QCoreApplication.translate("RootBuilder", trstr)   
